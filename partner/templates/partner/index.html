@@ -1,0 +1,22 @@
+{% extends 'material/frontend/base_module.html' %}
+
+{% block title %}Momentous Technosolutions{% endblock %}
+
+{% block sidenav_items %}
+    {{ block.super }}
+    <li><a class="collapsible-header" href="/accounts/profile">Profile</a></li>
+    <li><a class="collapsible-header" href="http://mtspl.co.in/contact-us/">Contact us</a></li>
+{% endblock %}
+
+{% block userlinks %}
+    <li>
+        <a class="dropdown-button" href="#!" data-activates="user-menu">
+            <i class="material-icons right">arrow_drop_down</i>Menu
+        </a>
+    </li>
+    <ul id="user-menu" class="dropdown-content" style="min-width:200px">
+        <li><a href="#">Item 1 </a></li>
+        <li><a href="#">Item 2 </a></li>
+    </ul>
+    {{ block.super }}
+{% endblock %}
