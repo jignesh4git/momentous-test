@@ -2,17 +2,19 @@
 
 {% block content %}
  <!-- {% load staticfiles %}
-<link href="{% static 'accounts/style.css' %}" rel="stylesheet">
- <div class="col-md-12"><h4 class="text-center">Profile</h4></div> -->
+<link href="{% static 'accounts/style.css' %}" rel="stylesheet">-->
+ <!--<div class="col-md-12"><h4 class="text-center">Profile</h4></div>-->
 
   {% for error in form.non_field_errors %}
       <div class='alert alert-danger'>{{ error }}</div>
   {% endfor %}
-
+<div class="left-panel">
+<div class="card">
   <form id='profileForm' class="text-center" method="post" action="{% url 'accounts:profile' %}">
 
     {% csrf_token %}
-
+<div class="card-content">
+  <div class="card-title">Profile </div>
     <p>
       <label for='id_username'>Username:</label>
       {{ form.username }}
@@ -70,9 +72,19 @@
     </p>
   
     <p>
-      <label/><input type="submit" value="Update Profile">
+      <!--<div class="card-action">-->
+         <!--<div class="right-align">-->
+          <!--<label/>   <input type="submit" class="btn btn-primary btn-lg" value="Update Profile">-->
+         <!--</div>-->
+      <!--</div-->
+     <div class="card-action">
+        <div class="right-align">
+                <input type="submit" class="btn btn-primary btn-lg" value="Update Profile">
+        </div>
+     </div>
     </p>
-
+   </div>
   </form>
-
+</div>
+</div>
 {% endblock content %}
