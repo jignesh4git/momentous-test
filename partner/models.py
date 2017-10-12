@@ -102,7 +102,7 @@ class ConnectedRetailer(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
-    contactno = models.IntegerField(blank=True)
+    #contactno = models.IntegerField(blank=True)
     # more model fields as needed
 
     def __str__(self):
