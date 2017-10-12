@@ -16,8 +16,8 @@
  
  <div class="w3-bar w3-section w3-black w3-card-4">
     <a class="w3-bar-item w3-button w3-green w3-hover-red w3-padding-16">Home</a>
-    <a class="w3-bar-item w3-button w3-hover-red w3-padding-16">Login</a>
-    <a class="w3-bar-item w3-button w3-hover-red w3-padding-16">Contact</a>
+    <a class="w3-bar-item w3-button w3-hover-red w3-padding-16" href="/partner/">Partner</a>
+    <a class="w3-bar-item w3-button w3-hover-red w3-padding-16" href="">Contact Us</a>
   </div>
 <div class="demo-wrapper"> 
 
@@ -55,7 +55,7 @@
         </li>
         <li class="tile tile-big tile-4 fig-tile" data-page-type="r-page" data-page-name="random-r-page">
           <figure>
-            <img src="images/blue.jpg" />
+            <img src="{% static 'home/images/blue.jpg' %}" />
             <figcaption class="tile-caption caption-left">Slide-out Caption from left</figcaption>
           </figure>
         </li>
@@ -86,7 +86,7 @@
       <div class="col3 clearfix">      
         <li class="tile tile-2xbig tile-9 fig-tile" data-page-type="custom-page" data-page-name="random-r-page">
           <figure>
-            <img src="images/summer.jpg" />
+            <img src="{% static 'home/images/summer.jpg' %}" />
             <figcaption class="tile-caption caption-bottom">Fixed Caption: Some Subtitle or Tile Description Goes Here with some kinda link or anything
             </figure>
         </li>
