@@ -156,5 +156,5 @@ from django.core.urlresolvers import reverse_lazy
 
 #LOGIN_REDIRECT_URL=reverse_lazy('/partner')
 DJANGO_SIMPLE_ACCOUNTS = {
-        'USER_PROFILE_PYTHON_PATH': 'partner.models.UserProfile',
+        # 'USER_PROFILE_PYTHON_PATH': 'partner.models.UserProfile',
  }

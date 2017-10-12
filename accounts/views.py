@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404, render
 from django.utils.translation import ugettext as _
 
 from .forms import ProfileForm, RegisterForm, LoginForm
-from .models import UserProfile
+# from .models import UserProfile
 
 
 
@@ -130,7 +130,7 @@ def profile(request):
                 user.last_name = form.cleaned_data['last_name']
 
              # if form.cleaned_data['contactno'] != user.contactno:
-             #    user.contactno = form.cleaned_data['contactno']    
+             #     user.contactno = form.cleaned_data['contactno']
 
             if form.cleaned_data['email'] != user.email:
                 user.email = form.cleaned_data['email']

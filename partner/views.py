@@ -62,4 +62,4 @@ class OrderDetailView(ListModelView):
 #     return render(request, 'profiles/profile.html', {
 #         'user_form': user_form,
 #         'profile_form': profile_form
-#     })    
+#     })
