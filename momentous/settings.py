@@ -150,7 +150,7 @@ STATIC_URL = '/static/'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 #LOGIN Page Redirection
-LOGIN_REDIRECT_URL = '/partner'
+LOGIN_REDIRECT_URL = '/partner/'
 
 from django.core.urlresolvers import reverse_lazy
 
