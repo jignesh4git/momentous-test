@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'material.frontend',
     'partner.apps.PartnerConfig',
     'home.apps.HomeConfig',
-    'accounts',   
+    'accounts',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -125,6 +126,17 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ],
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/

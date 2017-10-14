@@ -22,5 +22,7 @@ urlpatterns = [
     url(r'^user/', include('partner.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'', include(frontend_urls)),
-    url(r'^accounts/', include('accounts.urls', namespace='accounts')),    
+    url(r'^accounts/', include('accounts.urls', namespace='accounts')),
+
+    url(r'^apiv1/', include('apiv1.urls')),
 ]
