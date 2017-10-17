@@ -13,6 +13,7 @@ from . import models
 class DistributerViewSet(ModelViewSet):
     model = models.Distributer
 
+
 class ProductViewSet(ModelViewSet):
     model = models.Product
 
