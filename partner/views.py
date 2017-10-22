@@ -45,7 +45,7 @@ class RetailerViewSet(ModelViewSet):
     def get_queryset(self, request):
         distributer = models.Distributer.objects.filter(user=request.user)
         connected_retailers = models.ConnectedRetailer.objects.filter(distributer=distributer)
-        return models.Retailer.objects.filter(user__in=list(connected_retailers))
+        return models.Retailer.objects.filter(user__in=list(connected_retailers.values('retailer')))
 
 
 class OrderDetailView(ListModelView):
