@@ -17,6 +17,10 @@ class DistributerViewSet(ModelViewSet):
 class ProductViewSet(ModelViewSet):
     model = models.Product
 
+    def get_queryset(self, request):
+        distributer = models.Distributer.objects.filter(user=request.user)
+        return models.Product.objects.filter(distributer=distributer)
+
     list_display = ('code', 'name', 'packing', 'price', 'offer_id', 'active')
 
 
@@ -37,6 +41,10 @@ class RetailerViewSet(ModelViewSet):
     model = models.Retailer
 
     list_display = ('store_name', 'store_number', 'store_address', 'user')
+
+    def get_queryset(self, request):
+        distributer = models.Distributer.objects.filter(user=request.user)
+        return models.Retailer.objects.filter(distributer=distributer)
 
 
 class OrderDetailView(ListModelView):
