@@ -147,14 +147,15 @@ you can use the generic selector below, but it's slower:
 .fadeInForward-1,
 .fadeInForward-2,
 .fadeInForward-3 {
-  opacity: 0;
+   opacity: 0;
   -webkit-transform: translateZ(-5em) scale(0.75);
   -ms-transform: translateZ(-5em) scale(0.75);
   -o-transform: translateZ(-5em) scale(0.75);
   transform: translateZ(-5em) scale(0.75);
   -webkit-animation: fadeInForward .5s cubic-bezier(.03,.93,.43,.77) .4s normal forwards;
   -o-animation: fadeInForward .5s cubic-bezier(.03,.93,.43,.77) .4s normal forwards;
-  animation: fadeInForward .5s cubic-bezier(.03,.93,.43,.77) .4s normal forwards
+  animation: start .5s ease-in .4s normal forwards
+
 }
 
 .fadeInForward-2 {
