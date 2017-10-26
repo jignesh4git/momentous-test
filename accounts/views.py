@@ -8,14 +8,12 @@ from django.forms import ValidationError
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, get_list_or_404, render
 from django.utils.translation import ugettext as _
-
 from .forms import ProfileForm, RegisterForm, LoginForm
 # from .models import UserProfile
 
 
 
 context_base = {}
-
 
 
 def custom_login(request):
