@@ -13,8 +13,8 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 import dj_database_url
 import mimetypes
-mimetypes.add_type("text/css", ".css", True)
 
+mimetypes.add_type("text/css", ".css", True)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'home.apps.HomeConfig',
     'accounts',
     'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -139,6 +140,9 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
     )
 }
 
@@ -165,12 +169,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-#LOGIN Page Redirection
+# LOGIN Page Redirection
 LOGIN_REDIRECT_URL = '/partner/'
 
 from django.core.urlresolvers import reverse_lazy
 
-#LOGIN_REDIRECT_URL=reverse_lazy('/partner')
+# LOGIN_REDIRECT_URL=reverse_lazy('/partner')
 DJANGO_SIMPLE_ACCOUNTS = {
-        # 'USER_PROFILE_PYTHON_PATH': 'partner.models.UserProfile',
- }
+    # 'USER_PROFILE_PYTHON_PATH': 'partner.models.UserProfile',
+}
