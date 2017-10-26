@@ -8,6 +8,7 @@ from django.forms import ValidationError
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, get_list_or_404, render
 from django.utils.translation import ugettext as _
+from django.views.decorators.csrf import csrf_exempt
 from .forms import ProfileForm, RegisterForm, LoginForm
 # from .models import UserProfile
 
@@ -16,6 +17,7 @@ from .forms import ProfileForm, RegisterForm, LoginForm
 context_base = {}
 
 
+@csrf_exempt
 def custom_login(request):
     if request.user.is_authenticated():
         return HttpResponseRedirect(reverse('accounts:profile'))

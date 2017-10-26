@@ -2,13 +2,7 @@ from django.conf.urls import url, include
 from partner import models
 from . import data_serializers
 from rest_framework import routers, serializers, viewsets
-from rest_framework.authtoken import views
 
-from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
-
-for user in User.objects.all():
-    Token.objects.get_or_create(user=user)
 
 # ViewSets define the view behavior.
 class UserViewSet(viewsets.ModelViewSet):
@@ -39,5 +33,4 @@ router.register(r'product', ProductViewSet, base_name='Product')
 # Wire up our API using automatic URL routing.
 urlpatterns = [
     url(r'^', include(router.urls)),
-    url(r'^auth/', views.obtain_auth_token)
 ]
