@@ -6,5 +6,5 @@ from . import views
 
 
 urlpatterns = [
-    url('^$', generic.TemplateView.as_view(template_name="home/index.html"), name="index"),
+    url('^$', views.index, name="index"),
 ]

@@ -54,6 +54,10 @@
           fadeDashBoard();
           $('.'+page).addClass('slidePageInFromLeft').removeClass('slidePageBackLeft');
         }
+      else if(pageType === "t-page"){
+         $('.'+page).addClass('openpage');
+          fadeDashBoard();
+        }
         else{
           $('.'+page).addClass('openpage');
           fadeDashBoard();
@@ -72,6 +76,10 @@
       showDashBoard();
   });
   $('.s-close-button').click(function(){
+      $(this).parent().removeClass('slidePageInFromLeft').addClass('slidePageBackLeft');
+      showDashBoard();
+  });
+  $('.t-close-button').click(function(){
       $(this).parent().removeClass('slidePageInFromLeft').addClass('slidePageBackLeft');
       showDashBoard();
   });

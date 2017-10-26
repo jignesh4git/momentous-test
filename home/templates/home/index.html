@@ -8,12 +8,13 @@
   <title>SALESEASY</title>
   <link rel="stylesheet" href="{% static 'home/css/w3.css' %}">
   <link rel="stylesheet" href="{% static 'home/css/demo-styles.css' %}" />
+  <link rel="stylesheet" href="https://i.icomoon.io/public/temp/3daee3863f/saleseasy/style.css">
   <script src="{% static 'home/js/modernizr-1.5.min.js' %}"></script>
-  
+
 </head>
 
 <body>
- 
+
  <div class="w3-bar w3-section w3-black w3-card-4">
     <a class="w3-bar-item w3-button w3-green w3-hover-red w3-padding-16" href="/">Home</a>
     <a class="w3-bar-item w3-button w3-hover-red w3-padding-16" href="/accounts/login/">Distributor</a>
@@ -21,7 +22,7 @@
     <a class="w3-bar-item w3-button w3-hover-red w3-padding-16" href="/accounts/login/">Wholesaler</a>
     <a class="w3-bar-item w3-button w3-hover-red w3-padding-16" href="">Contact Us</a>
   </div>
-<div class="demo-wrapper"> 
+<div class="demo-wrapper">
 
   <div class="s-page random-restored-page">
     <h2 class="page-title">SALES EASY</h2>
@@ -48,6 +49,17 @@
 
     <div class="close-button r-close-button">x</div>
   </div>
+  <div class="t-page random-t-page">
+
+    <div class="page-content">
+      <h2 class="page-title">SALES EASY</h2>
+                <ul>
+                  <li><strong>Total Distributors:</strong> {{ num_distributors }}</li>
+                  <li><strong>Total Retailers:</strong> {{ num_retailers }}</li>
+                </ul>
+    </div>
+    <div class="close-button r-close-button">x</div>
+  </div>
   <div class="dashboard clearfix">
     <ul class="tiles">
       <div class="col1 clearfix">
@@ -65,14 +77,16 @@
         <li class="tile tile-big tile-4 fig-tile" data-page-type="r-page" data-page-name="random-r-page">
           <figure>
             <img src="{% static 'home/images/blue.jpg' %}" />
-            <figcaption class="tile-caption caption-left">Slide-out Caption from left</figcaption>
+            <figcaption class="tile-caption caption-left">
+               <div class="product"> <p> <a href="/partner/product/"> Check your all Products </a> </p></div>
+            </figcaption>
           </figure>
         </li>
       </div>
 
       <div class="col2 clearfix">
         <li class="tile tile-big tile-5" data-page-type="r-page" data-page-name="random-r-page">
-          <div><p><span class="icon-cloudy"></span>Weather</p></div>
+          <div><p><span class="icon-facebook"></span>facebook</p></div>
         </li>
         <li class="tile tile-big tile-6 slideTextLeft" data-page-type="r-page" data-page-name="random-r-page">
           <div><p><span class="icon-skype"></span>Skype</p></div>
@@ -92,15 +106,21 @@
         </li>
       </div>
 
-      <div class="col3 clearfix">      
-        <li class="tile tile-2xbig tile-9 fig-tile" data-page-type="custom-page" data-page-name="random-r-page">
+      <div class="col3 clearfix">
+        <li class="tile tile-2xbig tile-9 fig-tile" data-page-type="t-page" data-page-name="random-t-page">
           <figure>
             <img src="{% static 'home/images/summer.jpg' %}" />
-            <figcaption class="tile-caption caption-bottom">Fixed Caption: Some Subtitle or Tile Description Goes Here with some kinda link or anything
+            <figcaption class="tile-caption caption-bottom">
+              <p>Saleseasy has the following partner counts:</p>
+                <ul>
+                  <li><strong>Distributors:</strong> {{ num_distributors }}</li>
+                  <li><strong>Retailers:</strong> {{ num_retailers }}</li>
+                </ul>
             </figure>
         </li>
         <li class="tile tile-big tile-10" data-page-type="s-page" data-page-name="custom-page">
-          <div><p>Windows-8-like Animations with CSS3 &amp; jQuery &copy; Sara Soueidan. Licensed under MIT.</p></div>
+          <div><p style="text-align:center;">Momentous Technosolutions Pvt Ltd</p>
+          </div>
         </li>
       </div>
     </ul>
