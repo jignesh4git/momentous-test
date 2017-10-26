@@ -636,11 +636,18 @@ header a {
   display: table-cell;
   vertical-align: middle
 }
-.tile div p a{
+.product , .social  p {
+  display: table-cell;
+  vertical-align: middle
+}
+.social p a {
+    text-decoration: none;
+}
+.product p a{
   color :lightgrey;
   text-decoration: none;
 }
-.tile div p a:hover{
+.product p a:hover{
   color : white;
 }
 /*styling the individual tiles*/
