@@ -4,12 +4,6 @@ from . import data_serializers
 from rest_framework import routers, serializers, viewsets
 from rest_framework.authtoken import views
 
-from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
-
-for user in User.objects.all():
-    Token.objects.get_or_create(user=user)
-
 # ViewSets define the view behavior.
 class UserViewSet(viewsets.ModelViewSet):
     queryset = models.User.objects.all()
