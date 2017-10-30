@@ -98,15 +98,14 @@ class ConnectedRetailer(models.Model):
     remaining = models.IntegerField()
 
     def __str__(self):
-        return "{}".format(self.distributer, self.retailer)  
+        return "{}".format(self.distributer, self.retailer)
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
+
     # contactno = models.IntegerField(blank=False)
     # more model fields as needed
 
     def __unicode__(self):
         return self.user.username
-
-     
-
