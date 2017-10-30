@@ -12,5 +12,7 @@ urlpatterns = [
     url('^distributer/', include(views.DistributerViewSet().urls), name="distributer_list"),
     url('^retailer/', include(views.RetailerViewSet().urls), name="retailer_list"),
     url('^order/', include(views.OrderViewSet().urls), name="order_list"),
-    url('^product/', include(views.ProductViewSet().urls), name="product_list"),    
+    url('^product/', include(views.ProductViewSet().urls), name="product_list"),
+    url('^orderitem/', include(views.OrderItemViewSet().urls), name="orderitem_list"),
+    url('^connectedretailer/', include(views.ConnectedRetailerViewSet().urls), name="connectedretailer_list")
 ]

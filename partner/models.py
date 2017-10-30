@@ -27,7 +27,7 @@ class Distributer(models.Model):
 
 class Retailer(models.Model):
     user = models.OneToOneField(User)
-
+    distributer = models.ForeignKey(Distributer, on_delete=models.CASCADE)
     store_name = models.CharField(max_length=255, blank=False)
     store_number = PhoneNumberField()
     mobile_number = PhoneNumberField(blank=True)

@@ -8,6 +8,8 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
 from . import models
+from django.db.models import When, Q, F
+from django.views import generic
 
 
 class DistributerViewSet(ModelViewSet):
@@ -30,12 +32,51 @@ class OrderViewSet(ModelViewSet):
     def get_queryset(self, request):
         distributer = models.Distributer.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
+
         return models.Order.objects.filter(distributer=distributer) | models.Order.objects.filter(retailer=retailer)
 
     list_display = ('order_date', 'retailer', 'order_status', 'bill_total')
 
     def get_detail_view(self):
-        return OrderDetailView.as_view()
+        return OrderItemView.as_view()
+
+
+class OrderDetailView(generic.DetailView):
+    model = models.OrderItem
+    template_name = 'partner/order_detail.html'
+    list_display = ('order', 'product', 'item_quantity')
+
+    def get_queryset(request):
+        distributer = models.Distributer.objects.filter(request.user)
+        retailer = models.Retailer.objects.filter(user=request.user)
+        order = models.Order.objects.filter(distributer=distributer) | models.Order.objects.filter(retailer=retailer)
+        # order_id= request.get("q")
+        return models.OrderItem.objects.filter(order=order)
+
+
+class OrderItemViewSet(ModelViewSet):
+    model = models.OrderItem
+    list_display = ('order', 'product', 'item_quantity')
+
+    def get_queryset(self, request):
+        distributer = models.Distributer.objects.filter(user=request.user)
+        retailer = models.Retailer.objects.filter(user=request.user)
+        order = models.Order.objects.filter(distributer=distributer) | models.Order.objects.filter(retailer=retailer)
+
+        return models.OrderItem.objects.filter(order=order)
+
+
+class OrderItemView(ListModelView):
+    model = models.OrderItem
+    template_name = 'partner/order_detail.html'
+    list_display = ('order', 'product', 'item_quantity')
+
+    # def get_queryset(self, request):
+    #     distributer = models.Distributer.objects.filter(user=request.user)
+    #     retailer = models.Retailer.objects.filter(user=request.user)
+    #     order  = models.Order.objects.filter(distributer=distributer) | models.Order.objects.filter(retailer=retailer)
+
+    #     return models.OrderItem.objects.filter(order=order)
 
 
 class RetailerViewSet(ModelViewSet):
@@ -45,32 +86,35 @@ class RetailerViewSet(ModelViewSet):
 
     def get_queryset(self, request):
         distributer = models.Distributer.objects.filter(user=request.user)
-        connected_retailers = models.ConnectedRetailer.objects.filter(distributer=distributer)
-        return models.Retailer.objects.filter(user__in=list(connected_retailers.values('retailer')))
+        retailers = models.ConnectedRetailer.objects.filter(distributer=distributer)
+        return models.Retailer.objects.filter(distributer=distributer)
+
+    def get_detail_view(self):
+        return ConnectedRetailerView.as_view()
+class RetailerView(ModelViewSet):
+     model = models.Retailer
+     list_display = ('store_name', 'store_number', 'store_address', 'user')
 
 
-class OrderDetailView(ListModelView):
-    model = models.Order
-    template_name = 'partner/order_detail.html'
+class ConnectedRetailerViewSet(ModelViewSet):
+    model = models.ConnectedRetailer
 
-    list_display = ('product', 'item_quantity')
+    list_display = ('retailer', 'remaining')
 
-# @login_required
-# def update_profile(request):
-#     if request.method == 'POST':
-#         user_form = UserForm(request.POST, instance=request.user)
-#         profile_form = ProfileForm(request.POST, instance=request.user.profile)
-#         if user_form.is_valid() and profile_form.is_valid():
-#             user_form.save()
-#             profile_form.save()
-#             messages.success(request, _('Your profile was successfully updated!'))
-#             return redirect('settings:profile')
-#         else:
-#             messages.error(request, _('Please correct the error below.'))
-#     else:
-#         user_form = UserForm(instance=request.user)
-#         profile_form = ProfileForm(instance=request.user.profile)
-#     return render(request, 'profiles/profile.html', {
-#         'user_form': user_form,
-#         'profile_form': profile_form
-#     })
+    def get_queryset(self, request):
+        distributer = models.Distributer.objects.filter(user=request.user)
+        retailer = models.Retailer.objects.filter(user=request.user)
+
+        return models.ConnectedRetailer.objects.filter(
+            distributer=distributer) | models.ConnectedRetailer.objects.filter(retailer=retailer)
+
+
+class ConnectedRetailerView(ListModelView):
+    model = models.ConnectedRetailer
+    list_display = ('retailer', 'remaining')
+
+    # def get_queryset(self, request):
+    #    distributer = models.Distributer.objects.filter(user=request.user)
+    #    retailer = models.Retailer.objects.filter(user=request.user)
+
+    #    return models.ConnectedRetailer.objects.filter(distributer=distributer) | models.ConnectedRetailer.objects.filter(retailer=retailer)
