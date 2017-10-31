@@ -39,7 +39,7 @@ class PlaceOrder(APIView):
 
     def post(self, request, *args, **kwargs):
         # parse data from POST request
-        retailer_id = request.data['retailer_id']
+        retailer_id = request.user.id
         distributor_id = request.data['distributor_id']
         products = request.data['products']
         quantity = request.data['quantity']
