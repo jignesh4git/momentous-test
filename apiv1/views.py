@@ -109,9 +109,72 @@ class AccountView(APIView):
             distributor_data = data_serializers.DistributorAccountSerializer(distributor).data
             return Response({'status': '200', 'data': distributor_data})
         else:
-            retailer_data = data_serializers.RetailerAccountSerializer(distributor).data
+            retailer_data = data_serializers.RetailerAccountSerializer(retailer).data
             return Response({'status': '200', 'data': retailer_data})
+
+
+class ConnectedRetailerView(APIView):
+    throttle_classes = ()
+    permission_classes = ()
+    parser_classes = (parsers.JSONParser,)
+    renderer_classes = (renderers.JSONRenderer,)
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        if type(user).__name__ == 'AnonymousUser':
+            return Response(status=400, exception=True,
+                            data={'error': 'Auth token is missing.'})
+
+        # fetch connected retailers for this distributor
+        distributor = models.Distributer.objects.filter(user=user).first()
+        connected_retailers = models.Retailer.objects.filter(distributer=distributor)
+        retailer_data = data_serializers.RetailerMinimalDataSerializer(connected_retailers, many=True).data
+
+        return Response({'status': '200', 'data': retailer_data})
+
+
+class MyOrdersView(APIView):
+    throttle_classes = ()
+    permission_classes = ()
+    parser_classes = (parsers.JSONParser,)
+    renderer_classes = (renderers.JSONRenderer,)
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        if type(user).__name__ == 'AnonymousUser':
+            return Response(status=400, exception=True,
+                            data={'error': 'Auth token is missing.'})
+
+        # fetch retailer or distributor accounts
+        retailer = models.Retailer.objects.filter(user=user).first()
+        distributor = models.Distributer.objects.filter(user=user).first()
+
+        user_type = 'unknown'
+
+        if retailer is not None and distributor is None:
+            user_type = 'retailer'
+        else:
+            if retailer is None and distributor is not None:
+                user_type = 'distributor'
+
+        if user_type == 'unknown':
+            return Response(status=400, exception=True,
+                            data={'error': 'This account is not a retailer or distributor.'})
+
+        if user_type == 'distributor':
+            my_orders = models.Order.objects.filter(distributer=distributor)
+            orders_data = data_serializers.OrderSerializer(my_orders, many=True).data
+            return Response({'status': '200', 'data': orders_data})
+
+        if user_type == 'retailer':
+            my_orders = models.Order.objects.filter(retailer=retailer)
+            orders_data = data_serializers.OrderSerializer(my_orders, many=True).data
+            return Response({'status': '200', 'data': orders_data})
 
 
 place_order = PlaceOrder.as_view()
 get_account = AccountView.as_view()
+get_connected_retailers = ConnectedRetailerView.as_view()
+get_orders = MyOrdersView.as_view()
