@@ -107,10 +107,10 @@ class AccountView(APIView):
 
         if user_type == 'distributor':
             distributor_data = data_serializers.DistributorAccountSerializer(distributor).data
-            return Response({'status': '200', 'data': distributor_data})
+            return Response({'status': '200', 'data': distributor_data, 'type': 'distributor'})
         else:
             retailer_data = data_serializers.RetailerAccountSerializer(retailer).data
-            return Response({'status': '200', 'data': retailer_data})
+            return Response({'status': '200', 'data': retailer_data, 'type': 'retailer'})
 
 
 class ConnectedRetailerView(APIView):
