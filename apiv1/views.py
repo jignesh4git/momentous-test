@@ -50,7 +50,7 @@ class PlaceOrder(APIView):
 
         if retailer is None or distributor is None:
             return Response(status=400, exception=True,
-                            data={'error': 'requested retailer or distributor does not exist.'})
+                            data={'error': 'you can not place order with this distributor.'})
 
         # fetch all products to validate ids
         for item_id in products:
@@ -76,4 +76,42 @@ class PlaceOrder(APIView):
         return Response({'status': '200', 'data': request.data})
 
 
+class AccountView(APIView):
+    throttle_classes = ()
+    permission_classes = ()
+    parser_classes = (parsers.JSONParser,)
+    renderer_classes = (renderers.JSONRenderer,)
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        if type(user).__name__ == 'AnonymousUser':
+            return Response(status=400, exception=True,
+                            data={'error': 'Auth token is missing.'})
+
+        # fetch retailer or distributor accounts
+        retailer = models.Retailer.objects.filter(user=user).first()
+        distributor = models.Distributer.objects.filter(user=user).first()
+
+        user_type = 'unknown'
+
+        if retailer is not None and distributor is None:
+            user_type = 'retailer'
+        else:
+            if retailer is None and distributor is not None:
+                user_type = 'distributor'
+
+        if user_type == 'unknown':
+            return Response(status=400, exception=True,
+                            data={'error': 'This account is not a retailer or distributor.'})
+
+        if user_type == 'distributor':
+            distributor_data = data_serializers.DistributorAccountSerializer(distributor).data
+            return Response({'status': '200', 'data': distributor_data})
+        else:
+            retailer_data = data_serializers.RetailerAccountSerializer(distributor).data
+            return Response({'status': '200', 'data': retailer_data})
+
+
 place_order = PlaceOrder.as_view()
+get_account = AccountView.as_view()
