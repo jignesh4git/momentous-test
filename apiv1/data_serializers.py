@@ -18,4 +18,4 @@ class DistributerSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Product
-        fields = ('code', 'name', 'packing', 'category')
+        fields = ('id', 'code', 'name', 'packing', 'category')
