@@ -41,19 +41,6 @@ class OrderViewSet(ModelViewSet):
         return OrderItemView.as_view()
 
 
-class OrderDetailView(generic.DetailView):
-    model = models.OrderItem
-    template_name = 'partner/order_detail.html'
-    list_display = ('order', 'product', 'item_quantity')
-
-    def get_queryset(request):
-        distributer = models.Distributer.objects.filter(request.user)
-        retailer = models.Retailer.objects.filter(user=request.user)
-        order = models.Order.objects.filter(distributer=distributer) | models.Order.objects.filter(retailer=retailer)
-        # order_id= request.get("q")
-        return models.OrderItem.objects.filter(order=order)
-
-
 class OrderItemViewSet(ModelViewSet):
     model = models.OrderItem
     list_display = ('order', 'product', 'item_quantity')
@@ -71,12 +58,9 @@ class OrderItemView(ListModelView):
     template_name = 'partner/order_detail.html'
     list_display = ('order', 'product', 'item_quantity')
 
-    # def get_queryset(self, request):
-    #     distributer = models.Distributer.objects.filter(user=request.user)
-    #     retailer = models.Retailer.objects.filter(user=request.user)
-    #     order  = models.Order.objects.filter(distributer=distributer) | models.Order.objects.filter(retailer=retailer)
-
-    #     return models.OrderItem.objects.filter(order=order)
+    def get_queryset(self):
+        order_id = self.kwargs['pk']
+        return models.OrderItem.objects.filter(order_id__in=order_id)
 
 
 class RetailerViewSet(ModelViewSet):
@@ -91,9 +75,11 @@ class RetailerViewSet(ModelViewSet):
 
     def get_detail_view(self):
         return ConnectedRetailerView.as_view()
+
+
 class RetailerView(ModelViewSet):
-     model = models.Retailer
-     list_display = ('store_name', 'store_number', 'store_address', 'user')
+    model = models.Retailer
+    list_display = ('store_name', 'store_number', 'store_address', 'user')
 
 
 class ConnectedRetailerViewSet(ModelViewSet):
@@ -113,8 +99,6 @@ class ConnectedRetailerView(ListModelView):
     model = models.ConnectedRetailer
     list_display = ('retailer', 'remaining')
 
-    # def get_queryset(self, request):
-    #    distributer = models.Distributer.objects.filter(user=request.user)
-    #    retailer = models.Retailer.objects.filter(user=request.user)
-
-    #    return models.ConnectedRetailer.objects.filter(distributer=distributer) | models.ConnectedRetailer.objects.filter(retailer=retailer)
+    def get_queryset(self):
+        retailer_id = self.kwargs['pk']
+        return models.ConnectedRetailer.objects.filter(retailer__user_id=retailer_id)
