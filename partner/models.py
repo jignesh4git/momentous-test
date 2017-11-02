@@ -11,7 +11,6 @@ class partner(models.Model):
 
 class Distributer(models.Model):
     user = models.OneToOneField(User)
-
     mobile_number = PhoneNumberField()
 
     company_name = models.CharField(max_length=255, blank=False)
