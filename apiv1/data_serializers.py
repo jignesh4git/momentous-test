@@ -21,12 +21,16 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'code', 'name', 'packing', 'category')
 
 
-class OrderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Order
-        retailer = RetailerMinimalDataSerializer()
-        distributer = DistributorAccountSerializer()
-        fields = ('id', 'order_date', 'order_status', 'item_total', 'retailer', 'distributer')
+class RetailerMinimalDataSerializer(serializers.Serializer):
+    store_number = serializers.CharField()
+    store_name = serializers.CharField()
+    mobile_number = serializers.CharField()
+    store_address = serializers.CharField()
+    pin_code = serializers.CharField()
+    GSTIN = serializers.CharField()
+    PAN = serializers.CharField()
+
+    user = UserSerializer()
 
 
 class DistributorAccountSerializer(serializers.Serializer):
@@ -53,13 +57,9 @@ class RetailerAccountSerializer(serializers.Serializer):
     user = UserSerializer()
 
 
-class RetailerMinimalDataSerializer(serializers.Serializer):
-    store_number = serializers.CharField()
-    store_name = serializers.CharField()
-    mobile_number = serializers.CharField()
-    store_address = serializers.CharField()
-    pin_code = serializers.CharField()
-    GSTIN = serializers.CharField()
-    PAN = serializers.CharField()
-
-    user = UserSerializer()
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Order
+        retailer = RetailerMinimalDataSerializer()
+        distributer = DistributorAccountSerializer()
+        fields = ('id', 'order_date', 'order_status', 'item_total', 'retailer', 'distributer')
