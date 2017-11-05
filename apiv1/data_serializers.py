@@ -67,6 +67,14 @@ class RetailerAccountSerializer(serializers.Serializer):
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Order
-        retailer = RetailerSerializer()
-        distributer = DistributerSerializer()
+
+        retailer = serializers.SlugRelatedField(
+            read_only=True,
+            slug_field='store_name'
+        )
+
+        distributer = serializers.SlugRelatedField(
+            read_only=True,
+            slug_field='company_name'
+        )
         fields = ('id', 'order_date', 'order_status', 'item_total', 'retailer', 'distributer')
