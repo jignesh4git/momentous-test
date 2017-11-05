@@ -14,12 +14,12 @@ class DistributerSerializer(serializers.ModelSerializer):
         user = UserSerializer()
         fields = ('user', 'company_name', 'mobile_number', 'company_address')
 
+
 class RetailerSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Distributer
+        model = models.Retailer
         user = UserSerializer()
         fields = ('user', 'store_name', 'mobile_number', 'store_address')
-
 
 
 class ProductSerializer(serializers.HyperlinkedModelSerializer):

@@ -58,8 +58,8 @@ class Product(models.Model):
 
 
 class Order(models.Model):
-    retailer = models.ForeignKey(Retailer)
-    distributer = models.ForeignKey(Distributer)
+    retailer = models.ForeignKey(Retailer, related_name='retailer')
+    distributer = models.ForeignKey(Distributer, related_name='distributer')
     order_date = models.DateField(auto_created=True)
     order_status = models.CharField(max_length=255, blank=False)
     # requested_delivery_time = models.DateField(blank=True)
