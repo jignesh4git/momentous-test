@@ -12,7 +12,14 @@ class DistributerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Distributer
         user = UserSerializer()
-        fields = ('user', 'company_name', 'company_address')
+        fields = ('user', 'company_name', 'mobile_number', 'company_address')
+
+class RetailerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Distributer
+        user = UserSerializer()
+        fields = ('user', 'store_name', 'mobile_number', 'store_address')
+
 
 
 class ProductSerializer(serializers.HyperlinkedModelSerializer):
@@ -60,6 +67,6 @@ class RetailerAccountSerializer(serializers.Serializer):
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Order
-        retailer = RetailerMinimalDataSerializer()
-        distributer = DistributorAccountSerializer()
+        retailer = RetailerSerializer()
+        distributer = DistributerSerializer()
         fields = ('id', 'order_date', 'order_status', 'item_total', 'retailer', 'distributer')
