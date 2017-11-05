@@ -24,7 +24,9 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Order
-        fields = ('id', 'order_date', 'order_status', 'item_total')
+        retailer = RetailerMinimalDataSerializer()
+        distributer = DistributorAccountSerializer()
+        fields = ('id', 'order_date', 'order_status', 'item_total', 'retailer', 'distributer')
 
 
 class DistributorAccountSerializer(serializers.Serializer):
