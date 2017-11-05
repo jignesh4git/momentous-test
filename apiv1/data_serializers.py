@@ -5,7 +5,7 @@ from partner import models
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
-        fields = ('username', 'email', 'first_name', 'last_name')
+        fields = ('id', 'username', 'email', 'first_name', 'last_name')
 
 
 class DistributerSerializer(serializers.ModelSerializer):
