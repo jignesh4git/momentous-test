@@ -203,7 +203,7 @@ class MyOrderDetailView(APIView):
             return Response(status=400, exception=True,
                             data={'error': 'This account is not a retailer or distributor.'})
 
-        req_order_id = request.data['order_id']
+        req_order_id = request.query_params['id']
 
         order_items = models.OrderItem.objects.filter(order_id=req_order_id)
         orders_data = data_serializers.OrderItemSerializer(order_items, many=True).data
