@@ -65,28 +65,23 @@ class RetailerAccountSerializer(serializers.Serializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    retailer = RetailerMinimalDataSerializer()
+    distributer = DistributorAccountSerializer()
+
     class Meta:
         model = models.Order
-
-        retailer = serializers.SlugRelatedField(
-            read_only=True,
-            slug_field='store_name'
-        )
-
-        distributer = serializers.SlugRelatedField(
-            read_only=True,
-            slug_field='company_name'
-        )
         fields = ('id', 'order_date', 'order_status', 'item_total', 'retailer', 'distributer')
 
 
+class MinimalProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Product
+        fields = ('id', 'code', 'name', 'packing', 'category')
+
+
 class OrderItemSerializer(serializers.ModelSerializer):
+    product = MinimalProductSerializer()
+
     class Meta:
         model = models.OrderItem
-
-        retailer = RetailerSerializer()
-        distributer = DistributerSerializer()
-
-        product = serializers.PrimaryKeyRelatedField(read_only=True)
-
-        fields = ('id', 'item_quantity', 'product', 'retailer', 'distributer')
+        fields = ('id', 'item_quantity', 'product')
