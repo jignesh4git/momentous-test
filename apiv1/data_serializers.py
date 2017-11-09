@@ -78,3 +78,15 @@ class OrderSerializer(serializers.ModelSerializer):
             slug_field='company_name'
         )
         fields = ('id', 'order_date', 'order_status', 'item_total', 'retailer', 'distributer')
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.OrderItem
+
+        retailer = RetailerSerializer()
+        distributer = DistributerSerializer()
+
+        product = serializers.PrimaryKeyRelatedField(read_only=True)
+
+        fields = ('id', 'item_quantity', 'product', 'retailer', 'distributer')
