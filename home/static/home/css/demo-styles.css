@@ -112,7 +112,12 @@ you can use the generic selector below, but it's slower:
 .icon-credit-card:before {
   content: "\e009";
 }
-
+.icon-youtube:before {
+  content: "\e010";
+}
+.icon-Youtube:before {
+  content: "\e011";
+}
 .slidePageInFromLeft {
   -webkit-animation: slidePageInFromLeft .8s cubic-bezier(.01,1,.22,.99) 1 0.25s normal forwards;
   -o-animation: slidePageInFromLeft .8s cubic-bezier(.01,1,.22,.99) 1 0.25s normal forwards;
