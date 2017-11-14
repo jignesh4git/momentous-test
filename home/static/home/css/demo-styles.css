@@ -614,7 +614,9 @@ header a {
   width: 49%;
   margin-right: 2%
 }
-
+.tile-small a {
+   text-decoration: none;
+}
 .tile-small.last {
   margin-right: 0
 }
