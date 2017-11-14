@@ -174,7 +174,44 @@ class MyOrdersView(APIView):
             return Response({'status': '200', 'data': orders_data})
 
 
+class MyOrderDetailView(APIView):
+    throttle_classes = ()
+    permission_classes = ()
+    parser_classes = (parsers.JSONParser,)
+    renderer_classes = (renderers.JSONRenderer,)
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        if type(user).__name__ == 'AnonymousUser':
+            return Response(status=400, exception=True,
+                            data={'error': 'Auth token is missing.'})
+
+        # fetch retailer or distributor accounts
+        retailer = models.Retailer.objects.filter(user=user).first()
+        distributor = models.Distributer.objects.filter(user=user).first()
+
+        user_type = 'unknown'
+
+        if retailer is not None and distributor is None:
+            user_type = 'retailer'
+        else:
+            if retailer is None and distributor is not None:
+                user_type = 'distributor'
+
+        if user_type == 'unknown':
+            return Response(status=400, exception=True,
+                            data={'error': 'This account is not a retailer or distributor.'})
+
+        req_order_id = request.query_params['id']
+
+        order_items = models.OrderItem.objects.filter(order_id=req_order_id)
+        orders_data = data_serializers.OrderItemSerializer(order_items, many=True).data
+        return Response({'status': '200', 'data': orders_data})
+
+
 place_order = PlaceOrder.as_view()
 get_account = AccountView.as_view()
 get_connected_retailers = ConnectedRetailerView.as_view()
 get_orders = MyOrdersView.as_view()
+get_order_detail = MyOrderDetailView.as_view()
