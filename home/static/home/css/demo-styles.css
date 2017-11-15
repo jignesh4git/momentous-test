@@ -828,8 +828,8 @@ header a {
   color: #ddd;
 }
 .rotate3dX .front {
-  background-color: #455962;
-  color: #ddd
+  background-color: #e52d27;
+  color: #fff;
 }
 .rotate3dY .front {
   background-color: #ddd;
@@ -837,8 +837,8 @@ header a {
 }
 
 .faces .back {
-  background-color: #455962;
-  color: #ddd
+  background-color: #e52d27;
+  color: #fff;
 }
 
 .front span {
