@@ -59,7 +59,7 @@ class OrderItemView(ListModelView):
     list_display = ('order', 'product', 'item_quantity')
 
     def get_queryset(self):
-        order_id = self.kwargs['pk']
+        order_id = self.kwargs['pk']        
         return models.OrderItem.objects.filter(order_id__in=order_id)
 
 
