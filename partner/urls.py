@@ -9,7 +9,7 @@ from . import views
 
 urlpatterns = [
     url('^$', generic.TemplateView.as_view(template_name="partner/index.html"), name="index"),    
-    url('^distributer/', include(views.DistributerViewSet().urls), name="distributer_list"),
+    url('^distributor/', include(views.DistributorViewSet().urls), name="Distributor_list"),
     url('^retailer/', include(views.RetailerViewSet().urls), name="retailer_list"),
     url('^order/', include(views.OrderViewSet().urls), name="order_list"),
     url('^product/', include(views.ProductViewSet().urls), name="product_list"),

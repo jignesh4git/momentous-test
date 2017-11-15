@@ -3,7 +3,7 @@ from . import models
 
 # Register your models here.
 
-admin.site.register(models.Distributer)
+admin.site.register(models.Distributor)
 admin.site.register(models.Retailer)
 admin.site.register(models.ConnectedRetailer)
 

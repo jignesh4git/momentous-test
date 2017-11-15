@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class DistributerSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Distributer
+        model = models.Distributor
         user = UserSerializer()
         fields = ('user', 'company_name', 'mobile_number', 'company_address')
 

@@ -9,7 +9,7 @@ class partner(models.Model):
     name = models.CharField(max_length=250)
 
 
-class Distributer(models.Model):
+class Distributor(models.Model):
     user = models.OneToOneField(User)
     mobile_number = PhoneNumberField()
 
@@ -26,7 +26,7 @@ class Distributer(models.Model):
 
 class Retailer(models.Model):
     user = models.OneToOneField(User)
-    distributer = models.ForeignKey(Distributer, on_delete=models.CASCADE)
+    distributor = models.ForeignKey(Distributor, on_delete=models.CASCADE)
     store_name = models.CharField(max_length=255, blank=False)
     store_number = PhoneNumberField()
     mobile_number = PhoneNumberField(blank=True)
@@ -41,7 +41,7 @@ class Retailer(models.Model):
 
 
 class Product(models.Model):
-    distributer = models.ForeignKey(Distributer)
+    distributor = models.ForeignKey(Distributor)
 
     code = models.CharField(max_length=255, blank=True)
     name = models.CharField(max_length=255, blank=False)
@@ -58,7 +58,7 @@ class Product(models.Model):
 
 class Order(models.Model):
     retailer = models.ForeignKey(Retailer, related_name='retailer')
-    distributer = models.ForeignKey(Distributer, related_name='distributer')
+    distributor = models.ForeignKey(Distributor, related_name='distributor')
     order_date = models.DateField(auto_created=True)
     order_status = models.CharField(max_length=255, blank=False)
     # requested_delivery_time = models.DateField(blank=True)
@@ -91,13 +91,13 @@ class OrderItem(models.Model):
 
 
 class ConnectedRetailer(models.Model):
-    distributer = models.ForeignKey(Distributer, on_delete=models.CASCADE)
+    distributor = models.ForeignKey(Distributor, on_delete=models.CASCADE)
     retailer = models.ForeignKey(Retailer, on_delete=models.CASCADE)
     credit_limit = models.IntegerField()
     remaining = models.IntegerField()
 
     def __str__(self):
-        return "{}".format(self.distributer, self.retailer)
+        return "{}".format(self.Distributor, self.retailer)
 
 
 class UserProfile(models.Model):

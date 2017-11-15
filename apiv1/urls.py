@@ -1,12 +1,12 @@
 from django.conf.urls import url, include
 from rest_framework import routers
 from rest_framework.authtoken import views
-from .views import DistributerViewSet, ProductViewSet, place_order, get_account, get_connected_retailers, \
+from .views import DistributorViewSet, ProductViewSet, place_order, get_account, get_connected_retailers, \
     get_orders, get_order_detail
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
-router.register(r'distributor', DistributerViewSet)
+router.register(r'distributor', DistributorViewSet)
 router.register(r'product', ProductViewSet, base_name='Product')
 
 # Wire up our API using automatic URL routing.

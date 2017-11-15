@@ -17,8 +17,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 # ViewSets define the view behavior.
-class DistributerViewSet(viewsets.ModelViewSet):
-    queryset = models.Distributer.objects.all()
+class DistributorViewSet(viewsets.ModelViewSet):
+    queryset = models.Distributor.objects.all()
     serializer_class = data_serializers.DistributorAccountSerializer
 
 

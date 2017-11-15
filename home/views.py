@@ -1,12 +1,12 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from partner.models import Distributer, Retailer
+from partner.models import Distributor, Retailer
 from django.shortcuts import render
 
 
 def index(request):
     # Generate counts of some of the main objects
-    num_distributors = Distributer.objects.all().count()
+    num_distributors = Distributor.objects.all().count()
     num_retailers = Retailer.objects.all().count()
     run_migations()
 

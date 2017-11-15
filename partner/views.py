@@ -12,16 +12,16 @@ from django.db.models import When, Q, F
 from django.views import generic
 
 
-class DistributerViewSet(ModelViewSet):
-    model = models.Distributer
+class DistributorViewSet(ModelViewSet):
+    model = models.Distributor
 
 
 class ProductViewSet(ModelViewSet):
     model = models.Product
 
     def get_queryset(self, request):
-        distributer = models.Distributer.objects.filter(user=request.user)
-        return models.Product.objects.filter(distributer=distributer)
+        distributor = models.Distributor.objects.filter(user=request.user)
+        return models.Product.objects.filter(distributor=distributor)
 
     list_display = ('code', 'name', 'packing', 'price', 'offer_id', 'active')
 
@@ -30,10 +30,10 @@ class OrderViewSet(ModelViewSet):
     model = models.Order
 
     def get_queryset(self, request):
-        distributer = models.Distributer.objects.filter(user=request.user)
+        distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
 
-        return models.Order.objects.filter(distributer=distributer) | models.Order.objects.filter(retailer=retailer)
+        return models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(retailer=retailer)
 
     list_display = ('order_date', 'retailer', 'order_status', 'bill_total')
 
@@ -46,9 +46,9 @@ class OrderItemViewSet(ModelViewSet):
     list_display = ('order', 'product', 'item_quantity')
 
     def get_queryset(self, request):
-        distributer = models.Distributer.objects.filter(user=request.user)
+        distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
-        order = models.Order.objects.filter(distributer=distributer) | models.Order.objects.filter(retailer=retailer)
+        order = models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(retailer=retailer)
 
         return models.OrderItem.objects.filter(order=order)
 
@@ -69,9 +69,9 @@ class RetailerViewSet(ModelViewSet):
     list_display = ('store_name', 'store_number', 'store_address', 'user')
 
     def get_queryset(self, request):
-        distributer = models.Distributer.objects.filter(user=request.user)
-        retailers = models.ConnectedRetailer.objects.filter(distributer=distributer)
-        return models.Retailer.objects.filter(distributer=distributer)
+        distributor = models.Distributor.objects.filter(user=request.user)
+        retailers = models.ConnectedRetailer.objects.filter(distributor=distributor)
+        return models.Retailer.objects.filter(distributor=distributor)
 
     def get_detail_view(self):
         return ConnectedRetailerView.as_view()
@@ -88,11 +88,11 @@ class ConnectedRetailerViewSet(ModelViewSet):
     list_display = ('retailer', 'remaining')
 
     def get_queryset(self, request):
-        distributer = models.Distributer.objects.filter(user=request.user)
+        distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
 
         return models.ConnectedRetailer.objects.filter(
-            distributer=distributer) | models.ConnectedRetailer.objects.filter(retailer=retailer)
+            distributor=distributor) | models.ConnectedRetailer.objects.filter(retailer=retailer)
 
 
 class ConnectedRetailerView(ListModelView):
