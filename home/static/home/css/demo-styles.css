@@ -44,7 +44,26 @@
 }
 
 /* Use the following CSS code if you want to have a class per icon */
-
+/* new CSS for icomoon */
+[class^="icon-"], [class*=" icon-"] {
+    font-family: 'icomoon' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    letter-spacing: 0;
+    -webkit-font-feature-settings: "liga";
+    -moz-font-feature-settings: "liga=1";
+    -moz-font-feature-settings: "liga";
+    -ms-font-feature-settings: "liga" 1;
+    font-feature-settings: "liga";
+    -webkit-font-variant-ligatures: discretionary-ligatures;
+    font-variant-ligatures: discretionary-ligatures;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
 /*
 Instead of a list of all class selectors,
 you can use the generic selector below, but it's slower:
@@ -59,8 +78,11 @@ you can use the generic selector below, but it's slower:
 .icon-cloud,
 .icon-cloudy,
 .icon-dropbox,
-.icon-instagram,
-.icon-facebook {
+.icon-instagram
+/*.icon-facebook,
+.icon-credit-card,
+.icon-youtube,
+.icon-Youtube */{
   font-family: 'icomoon';
   speak: none;
   font-style: normal;
@@ -72,7 +94,7 @@ you can use the generic selector below, but it's slower:
 }
 
 .icon-arrow-right:before {
-  content: "\e000"
+  content: "\e900"
 }
 
 .icon-calendar-alt-fill:before {
@@ -88,7 +110,7 @@ you can use the generic selector below, but it's slower:
 }
 
 .icon-skype:before {
-  content: "\e004"
+  content: "\eac5"
 }
 
 .icon-cloud:before {
@@ -117,6 +139,15 @@ you can use the generic selector below, but it's slower:
 }
 .icon-Youtube:before {
   content: "\e011";
+}
+.icon-cart:before {
+  content: "\e93a";
+}
+.icon-google-plus:before {
+  content: "\ea8b";
+}
+.icon-quill:before {
+  content: "\e901";
 }
 .slidePageInFromLeft {
   -webkit-animation: slidePageInFromLeft .8s cubic-bezier(.01,1,.22,.99) 1 0.25s normal forwards;
