@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response,render
 from django.template import RequestContext
 from partner.models import Distributor, Retailer
 
