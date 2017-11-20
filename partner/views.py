@@ -31,10 +31,9 @@ class OrderViewSet(ModelViewSet):
     def get_queryset(self, request):
         distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
-
         return models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(retailer=retailer)
 
-    list_display = ('order_date', 'retailer', 'order_status', 'bill_total')
+    list_display = ('invoice_id','order_date', 'retailer', 'order_status', 'bill_total')
 
     def get_detail_view(self):
        return OrderItemView.as_view()

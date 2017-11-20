@@ -69,11 +69,25 @@ class Order(models.Model):
     other_charge_description = models.CharField(max_length=255, blank=True)
     other_charge = models.CharField(max_length=255, blank=True)
     bill_total = models.CharField(max_length=255, blank=True)
+    invoice_id = models.CharField(max_length=255)
 
     # delivery_date = models.DateField(blank=True)
-
+    def make_id(self):
+        q = Order.objects.values_list('id', flat=True).order_by('-id')[:1]
+        if len(q):
+            self.number = str(self.id) if self.id else str(int(q.get()) + 1)
+        else:
+            self.number = 1
+        return "SEDES"+str(self.distributor_id)+"RE"+str(self.retailer_id)+"-"+str(self.number)
     def __str__(self):
-        return "{}".format(self.id, self.order_date)
+        if not self.retailer:
+            return "{}".format(self.order_date)
+        else:
+            return "{}".format(self.id, self.retailer)
+    def save(self,*args,**kwargs):
+        if not self.id:
+            self.invoice_id = self.make_id()
+        super(Order,self).save(*args,**kwargs)
 
 
 class OrderItem(models.Model):
