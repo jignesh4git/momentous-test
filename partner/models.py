@@ -3,6 +3,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth.models import User
 
 
+
 # Create your models here.
 
 class partner(models.Model):
@@ -97,7 +98,7 @@ class ConnectedRetailer(models.Model):
     remaining = models.IntegerField()
 
     def __str__(self):
-        return "{}".format(self.Distributor, self.retailer)
+        return "{}".format(self.distributor, self.retailer)
 
 
 class UserProfile(models.Model):

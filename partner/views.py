@@ -2,9 +2,8 @@
 from __future__ import unicode_literals
 
 from material.frontend.views import ModelViewSet, ListModelView
-
-from django.shortcuts import render
-
+from django.views.generic.detail import SingleObjectMixin
+from django.shortcuts import render,get_object_or_404,redirect
 from django.contrib.auth.decorators import login_required
 
 from . import models
@@ -38,8 +37,14 @@ class OrderViewSet(ModelViewSet):
     list_display = ('order_date', 'retailer', 'order_status', 'bill_total')
 
     def get_detail_view(self):
-        return OrderItemView.as_view()
+       return OrderItemView.as_view()
 
+class OrderDetailView(SingleObjectMixin,ListModelView):
+    model = models.Order
+    template_name = 'partner/order_detail.html'    
+    def get_queryset(self):
+        order_id = self.kwargs['pk']
+        return models.Order.objects.filter(id=order_id)
 
 class OrderItemViewSet(ModelViewSet):
     model = models.OrderItem
@@ -101,4 +106,4 @@ class ConnectedRetailerView(ListModelView):
 
     def get_queryset(self):
         retailer_id = self.kwargs['pk']
-        return models.ConnectedRetailer.objects.filter(retailer__user_id=retailer_id)
+        return models.ConnectedRetailer.objects.filter(retailer__user_id=retailer_id)    

@@ -5,7 +5,7 @@
 <a class="active" href="{% url view.model|frontend_urlname:'list' %}">{{ view.model|verbose_name_plural|title }}</a>
 {% endblock %}
 
-
+<h1>Order Details:</h1>
 {% block footer %}
 <script type="text/javascript">
   config = {{ datatable_config|safe }};
