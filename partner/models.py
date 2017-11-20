@@ -78,7 +78,7 @@ class Order(models.Model):
             self.number = str(self.id) if self.id else str(int(q.get()) + 1)
         else:
             self.number = 1
-        return "SEDES"+str(self.distributor_id)+"RE"+str(self.retailer_id)+"-"+str(self.number)
+        return "SEDIST"+str(self.distributor_id)+"RET"+str(self.retailer_id)+"-"+str(self.number)
     def __str__(self):
         if not self.retailer:
             return "{}".format(self.order_date)
