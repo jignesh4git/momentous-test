@@ -28,7 +28,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         distributor_id = self.request.query_params['id']
-        return models.Product.objects.filter(distributer__user_id__exact=distributor_id)
+        return models.Product.objects.filter(distributor__user_id__exact=distributor_id)
 
 
 class PlaceOrder(APIView):
@@ -46,7 +46,7 @@ class PlaceOrder(APIView):
 
         # fetch retailer and distributor accounts
         retailer = models.Retailer.objects.filter(user_id=retailer_id).first()
-        distributor = models.Distributer.objects.filter(user_id=distributor_id).first()
+        distributor = models.Distributor.objects.filter(user_id=distributor_id).first()
 
         if retailer is None or distributor is None:
             return Response(status=400, exception=True,
@@ -61,7 +61,7 @@ class PlaceOrder(APIView):
 
         # create order object with retailer and distributor
         order = models.Order.objects.create(retailer=retailer,
-                                            distributer=distributor,
+                                            distributor=distributor,
                                             order_date=datetime.now(),
                                             order_status='REQUESTED_APP')
 
@@ -91,7 +91,7 @@ class AccountView(APIView):
 
         # fetch retailer or distributor accounts
         retailer = models.Retailer.objects.filter(user=user).first()
-        distributor = models.Distributer.objects.filter(user=user).first()
+        distributor = models.Distributor.objects.filter(user=user).first()
 
         user_type = 'unknown'
 
@@ -127,8 +127,8 @@ class ConnectedRetailerView(APIView):
                             data={'error': 'Auth token is missing.'})
 
         # fetch connected retailers for this distributor
-        distributor = models.Distributer.objects.filter(user=user).first()
-        connected_retailers = models.Retailer.objects.filter(distributer=distributor)
+        distributor = models.Distributor.objects.filter(user=user).first()
+        connected_retailers = models.Retailer.objects.filter(distributor=distributor)
         retailer_data = data_serializers.RetailerMinimalDataSerializer(connected_retailers, many=True).data
 
         return Response({'status': '200', 'data': retailer_data})
@@ -149,7 +149,7 @@ class MyOrdersView(APIView):
 
         # fetch retailer or distributor accounts
         retailer = models.Retailer.objects.filter(user=user).first()
-        distributor = models.Distributer.objects.filter(user=user).first()
+        distributor = models.Distributor.objects.filter(user=user).first()
 
         user_type = 'unknown'
 
@@ -164,7 +164,7 @@ class MyOrdersView(APIView):
                             data={'error': 'This account is not a retailer or distributor.'})
 
         if user_type == 'distributor':
-            my_orders = models.Order.objects.filter(distributer=distributor)
+            my_orders = models.Order.objects.filter(distributor=distributor)
             orders_data = data_serializers.OrderSerializer(my_orders, many=True).data
             return Response({'status': '200', 'data': orders_data})
 
@@ -189,7 +189,7 @@ class MyOrderDetailView(APIView):
 
         # fetch retailer or distributor accounts
         retailer = models.Retailer.objects.filter(user=user).first()
-        distributor = models.Distributer.objects.filter(user=user).first()
+        distributor = models.Distributor.objects.filter(user=user).first()
 
         user_type = 'unknown'
 

@@ -70,7 +70,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Order
-        fields = ('id', 'order_date', 'order_status', 'item_total', 'retailer', 'distributer')
+        fields = ('id', 'order_date', 'order_status', 'item_total', 'retailer', 'distributor')
 
 
 class MinimalProductSerializer(serializers.ModelSerializer):
