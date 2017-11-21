@@ -75,6 +75,7 @@ class Order(models.Model):
     # Metadata
     class Meta:
         ordering = ["-order_date"]
+
     def make_id(self):
         q = Order.objects.values_list('id', flat=True).order_by('-id')[:1]
         if len(q):
@@ -82,11 +83,10 @@ class Order(models.Model):
         else:
             self.number = 1
         return "SEDIST"+str(self.distributor_id)+"RET"+str(self.retailer_id)+"-"+str(self.number)
+
     def __str__(self):
-        if not self.retailer:
-            return "{}".format(self.order_date)
-        else:
             return "{}".format(self.id, self.retailer)
+
     def save(self,*args,**kwargs):
         if not self.id:
             self.invoice_id = self.make_id()
