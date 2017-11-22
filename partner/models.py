@@ -132,7 +132,8 @@ class OrderAdmin(admin.ModelAdmin):
             if db_field.name == "retailer":
                 kwargs["queryset"] = ret
             if db_field.name == "distributor":
-                kwargs["queryset"] = ConnectedRetailer.objects.filter(retailer=ret)
+                distributor_id = ConnectedRetailer.objects.filter(retailer=ret).values('distributor')
+                kwargs["queryset"] = Distributor.objects.filter(id__in=distributor_id)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class OrderItem(models.Model):
