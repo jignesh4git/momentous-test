@@ -124,12 +124,13 @@ class OrderAdmin(admin.ModelAdmin):
         ret = Retailer.objects.filter(user=request.user)
         if dist:
             if db_field.name == "distributor":
-                kwargs["queryset"] = Distributor.objects.filter(user=request.user)
+                kwargs["queryset"] = dist
             if db_field.name == "retailer":
-                kwargs["queryset"] = ConnectedRetailer.objects.filter(distributor=dist)
-        else:
+                retailer_id = ConnectedRetailer.objects.filter(distributor=dist).values('retailer')
+                kwargs["queryset"] = Retailer.objects.filter(id__in=retailer_id)
+        if ret:
             if db_field.name == "retailer":
-                kwargs["queryset"] = Retailer.objects.filter(user=request.user)
+                kwargs["queryset"] = ret
             if db_field.name == "distributor":
                 kwargs["queryset"] = ConnectedRetailer.objects.filter(retailer=ret)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
