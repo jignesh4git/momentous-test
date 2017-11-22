@@ -66,7 +66,6 @@ class OrderItemView(ListModelView):
         # invoice_id = models.Order.objects.filter(id=order_id)
         return models.OrderItem.objects.filter(order_id__in=order_id)
 
-
 class RetailerViewSet(ModelViewSet):
     model = models.Retailer
 

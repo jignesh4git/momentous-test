@@ -1,7 +1,7 @@
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth.models import User
-
+from django.contrib import admin
 
 
 # Create your models here.
@@ -70,7 +70,6 @@ class Order(models.Model):
     other_charge = models.CharField(max_length=255, blank=True)
     bill_total = models.CharField(max_length=255, blank=True)
     invoice_id = models.CharField(max_length=255)
-
     # delivery_date = models.DateField(blank=True)
     # Metadata
     class Meta:
@@ -88,10 +87,54 @@ class Order(models.Model):
             return "{}".format(self.id, self.retailer)
 
     def save(self,*args,**kwargs):
-        if not self.id:
+        if not self.invoice_id:
             self.invoice_id = self.make_id()
         super(Order,self).save(*args,**kwargs)
 
+class OrderAdmin(admin.ModelAdmin):
+    distributor = models.ForeignKey(Distributor, related_name="dconnects",related_query_name="dconnect")
+    retailer = models.ForeignKey(Retailer, related_name="rconnects",related_query_name="rconnect")
+    pass
+    list_display = ('order_date', 'invoice_id', 'retailer', 'order_status', 'bill_total')
+    readonly_fields = (
+        'invoice_id',
+    )
+    class Meta:
+        ordering = ["-order_date"]
+    def get_queryset(self, request):
+        distributor = Distributor.objects.filter(user=request.user)
+        retailer = Retailer.objects.filter(user=request.user)
+        return Order.objects.filter(distributor=distributor) | Order.objects.filter(retailer=retailer)
+    def make_id(self):
+        q = Order.objects.values_list('id', flat=True).order_by('-id')[:1]
+        if len(q):
+            self.number = str(self.id) if self.id else str(int(q.get()) + 1)
+        else:
+            self.number = 1
+        return "SEDIST"+str(self.distributor_id)+"RET"+str(self.retailer_id)+"-"+str(self.number)
+    def __str__(self):
+            return "{}".format(self.id, self.retailer)
+    def save(self, *args, **kwargs):
+        if not self.invoice_id:
+            self.invoice_id = self.make_id()
+        super(Order, self).save(*args, **kwargs)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        dist = Distributor.objects.filter(user=request.user)
+        ret = Retailer.objects.filter(user=request.user)
+        if dist:
+            if db_field.name == "distributor":
+                kwargs["queryset"] = Distributor.objects.filter(user=request.user)
+                if not kwargs["queryset"]:
+                    if db_field.name == "retailer":
+                        kwargs["queryset"] = Retailer.objects.filter(Distributor=kwargs["queryset"])
+        if ret:
+            if db_field.name == "retailer":
+                kwargs["queryset"] = Retailer.objects.filter(user=request.user)
+                if not kwargs["queryset"]:
+                    if db_field.name == "distributor":
+                        kwargs["queryset"] = Distributor.objects.filter(Distributor=kwargs["queryset"])
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)    
