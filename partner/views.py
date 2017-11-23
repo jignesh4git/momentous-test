@@ -14,26 +14,24 @@ from django.views import generic
 class DistributorViewSet(ModelViewSet):
     model = models.Distributor
 
-
 class ProductViewSet(ModelViewSet):
     model = models.Product
-
+    list_display = ('code', 'name', 'packing', 'price', 'offer_id', 'active')
     def get_queryset(self, request):
         distributor = models.Distributor.objects.filter(user=request.user)
+        retailer = models.Retailer.objects.filter(user=request.user)
+        if retailer:
+            distributor = models.ConnectedRetailer.objects.filter(retailer=retailer).values('distributor')
         return models.Product.objects.filter(distributor=distributor)
-
-    list_display = ('code', 'name', 'packing', 'price', 'offer_id', 'active')
-
 
 class OrderViewSet(ModelViewSet):
     model = models.Order
+    list_display = ('order_date', 'invoice_id', 'retailer', 'order_status', 'bill_total')
+
     def get_queryset(self, request):
         distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
         return models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(retailer=retailer)
-
-    list_display = ('order_date','invoice_id','retailer', 'order_status', 'bill_total')
-
     def get_detail_view(self):
        return OrderItemView.as_view()
 
@@ -47,20 +45,16 @@ class OrderDetailView(SingleObjectMixin,ListModelView):
 class OrderItemViewSet(ModelViewSet):
     model = models.OrderItem
     list_display = ('order', 'product', 'item_quantity')
-
     def get_queryset(self, request):
         distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
         order = models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(retailer=retailer)
-
         return models.OrderItem.objects.filter(order=order)
-
 
 class OrderItemView(ListModelView):
     model = models.OrderItem
     template_name = 'partner/order_detail.html'
     list_display = ('order', 'product', 'item_quantity')
-
     def get_queryset(self):
         order_id = self.kwargs['pk']
         # invoice_id = models.Order.objects.filter(id=order_id)
@@ -68,40 +62,30 @@ class OrderItemView(ListModelView):
 
 class RetailerViewSet(ModelViewSet):
     model = models.Retailer
-
     list_display = ('store_name', 'store_number', 'store_address', 'user')
-
     def get_queryset(self, request):
         distributor = models.Distributor.objects.filter(user=request.user)
         retailers = models.ConnectedRetailer.objects.filter(distributor=distributor)
         return models.Retailer.objects.filter(distributor=distributor)
-
     def get_detail_view(self):
         return ConnectedRetailerView.as_view()
-
 
 class RetailerView(ModelViewSet):
     model = models.Retailer
     list_display = ('store_name', 'store_number', 'store_address', 'user')
 
-
 class ConnectedRetailerViewSet(ModelViewSet):
     model = models.ConnectedRetailer
-
     list_display = ('retailer', 'remaining')
-
     def get_queryset(self, request):
         distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
-
         return models.ConnectedRetailer.objects.filter(
             distributor=distributor) | models.ConnectedRetailer.objects.filter(retailer=retailer)
-
 
 class ConnectedRetailerView(ListModelView):
     model = models.ConnectedRetailer
     list_display = ('retailer', 'remaining')
-
     def get_queryset(self):
         retailer_id = self.kwargs['pk']
-        return models.ConnectedRetailer.objects.filter(retailer__user_id=retailer_id)    
+        return models.ConnectedRetailer.objects.filter(retailer__user_id=retailer_id)
