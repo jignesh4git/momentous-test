@@ -65,8 +65,8 @@ class Order(models.Model):
     invoice_id = models.CharField(max_length=255)
     # delivery_date = models.DateField(blank=True)
     # Metadata
-    class Meta:
-        ordering = ["-order_date"]
+    # class Meta:
+        # ordering = ["-order_date"]
     def make_id(self):
         q = Order.objects.values_list('id', flat=True).order_by('-id')[:1]
         if len(q):

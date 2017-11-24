@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from . import models
 from django.db.models import When, Q, F
 from django.views import generic
+from django.views.generic import TemplateView
 
 
 class DistributorViewSet(ModelViewSet):
@@ -32,15 +33,24 @@ class OrderViewSet(ModelViewSet):
         distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
         return models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(retailer=retailer)
-    def get_detail_view(self):
-       return OrderItemView.as_view()
+    def get_detail_view(request):
+        return  OrderDetailView.as_view()
 
-class OrderDetailView(SingleObjectMixin,ListModelView):
+class OrderDetailView(TemplateView,ListModelView):
     model = models.Order
-    template_name = 'partner/order_detail.html'    
-    def get_queryset(self):
+    template_name = 'partner/order_detail.html'
+    def get_context_data(self, **kwargs):
+        context = super(OrderDetailView, self).get_context_data(**kwargs)
         order_id = self.kwargs['pk']
-        return models.Order.objects.filter(id=order_id)
+        dist_id = models.Order.objects.filter(id=order_id).values('distributor_id')
+        ret_id = models.Order.objects.filter(id=order_id).values('retailer_id')
+
+        # get all context for invoice:
+        context['order'] = models.Order.objects.filter(id=order_id)
+        context['distributor'] = models.Distributor.objects.filter(id__in=dist_id)
+        context['retailer'] = models.Retailer.objects.filter(id__in=ret_id)
+        context['orderitems'] = models.OrderItem.objects.filter(order_id__in=order_id)
+        return context
 
 class OrderItemViewSet(ModelViewSet):
     model = models.OrderItem
@@ -49,11 +59,10 @@ class OrderItemViewSet(ModelViewSet):
         distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
         order = models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(retailer=retailer)
-        return models.OrderItem.objects.filter(order=order)
+        return models.OrderItem.objects.filter(order__in=order)
 
 class OrderItemView(ListModelView):
     model = models.OrderItem
-    template_name = 'partner/order_detail.html'
     list_display = ('order', 'product', 'item_quantity')
     def get_queryset(self):
         order_id = self.kwargs['pk']
