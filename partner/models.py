@@ -49,8 +49,8 @@ class Product(models.Model):
         (18,'18'),
         (28,'28'),
     )
-    s_gst = models.CharField(max_length=2,choices=GST_CHOICES,default=0)
-    c_gst = models.CharField(max_length=2,choices=GST_CHOICES,default=0)
+    s_gst = models.IntegerField(choices=GST_CHOICES,default=0)
+    c_gst = models.IntegerField(choices=GST_CHOICES,default=0)
     final_price = models.CharField(max_length=255, blank=True)
     offer_id = models.CharField(max_length=255, blank=True)
     active = models.BooleanField()
