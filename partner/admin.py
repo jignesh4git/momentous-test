@@ -53,7 +53,7 @@ class ConnectedRetailerAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name', 'packing', 'price', 'offer_id', 'active')
+    list_display = ('code', 'name', 'packing', 'price', 's_gst', 'c_gst', 'final_price','offer_id', 'active')
     def get_queryset(self, request):
         distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)

@@ -17,7 +17,7 @@ class DistributorViewSet(ModelViewSet):
 
 class ProductViewSet(ModelViewSet):
     model = models.Product
-    list_display = ('code', 'name', 'packing', 'price', 'offer_id', 'active')
+    list_display = ('code', 'name', 'packing', 'price','s_gst','c_gst','final_price','offer_id', 'active')
     def get_queryset(self, request):
         distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
