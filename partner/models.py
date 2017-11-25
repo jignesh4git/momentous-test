@@ -42,6 +42,16 @@ class Product(models.Model):
     name = models.CharField(max_length=255, blank=False)
     packing = models.CharField(max_length=255, blank=False)
     price = models.CharField(max_length=255, blank=True)
+    GST_CHOICES = (
+        (0,'0'),
+        (5,'5'),
+        (12,'12'),
+        (18,'18'),
+        (28,'28'),
+    )
+    s_gst = models.CharField(max_length=2,choices=GST_CHOICES,default=0)
+    c_gst = models.CharField(max_length=2,choices=GST_CHOICES,default=0)
+    final_price = models.CharField(max_length=255, blank=True)
     offer_id = models.CharField(max_length=255, blank=True)
     active = models.BooleanField()
     category = models.CharField(max_length=255, blank=True)
@@ -103,6 +113,9 @@ class ConnectedRetailer(models.Model):
 
     def __str__(self):
         return "{}".format(self.distributor, self.retailer)
+
+class ConnectedRetailerAdmin(admin.ModelAdmin):
+    list_display = ('retailer', 'remaining')
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
