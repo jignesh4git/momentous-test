@@ -8,7 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'email', 'first_name', 'last_name')
 
 
-class DistributerSerializer(serializers.ModelSerializer):
+class DistributorSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Distributor
         user = UserSerializer()
@@ -52,7 +52,7 @@ class DistributorAccountSerializer(serializers.Serializer):
 
 
 class RetailerAccountSerializer(serializers.Serializer):
-    distributer = DistributerSerializer()
+    distributor = DistributorSerializer()
     store_number = serializers.CharField()
     store_name = serializers.CharField()
     mobile_number = serializers.CharField()
@@ -66,7 +66,7 @@ class RetailerAccountSerializer(serializers.Serializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     retailer = RetailerMinimalDataSerializer()
-    distributer = DistributorAccountSerializer()
+    distributor = DistributorAccountSerializer()
 
     class Meta:
         model = models.Order
