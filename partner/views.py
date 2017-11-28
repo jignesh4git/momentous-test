@@ -23,7 +23,7 @@ class ProductViewSet(ModelViewSet):
         retailer = models.Retailer.objects.filter(user=request.user)
         if retailer:
             distributor = models.ConnectedRetailer.objects.filter(retailer=retailer).values('distributor')
-        return models.Product.objects.filter(distributor=distributor)
+        return models.Product.objects.filter(distributor__in=distributor)
 
 class OrderViewSet(ModelViewSet):
     model = models.Order
