@@ -11,11 +11,9 @@ class Partner(models.Model):
 class Distributor(models.Model):
     user = models.OneToOneField(User)
     mobile_number = PhoneNumberField()
-
     company_name = models.CharField(max_length=255, blank=False)
     company_address = models.CharField(max_length=255)
     pin_code = models.CharField(max_length=255)
-
     GSTIN = models.CharField(max_length=255, blank=True)
     PAN = models.CharField(max_length=255, blank=True)
 
@@ -28,7 +26,6 @@ class Retailer(models.Model):
     store_name = models.CharField(max_length=255, blank=False)
     store_number = PhoneNumberField()
     mobile_number = PhoneNumberField(blank=True)
-
     store_address = models.CharField(max_length=255)
     pin_code = models.CharField(max_length=255)
     GSTIN = models.CharField(max_length=255, blank=True)
@@ -110,12 +107,8 @@ class ConnectedRetailer(models.Model):
     retailer = models.ForeignKey(Retailer, on_delete=models.CASCADE)
     credit_limit = models.IntegerField()
     remaining = models.IntegerField()
-
     def __str__(self):
         return "{}".format(self.distributor, self.retailer)
-
-class ConnectedRetailerAdmin(admin.ModelAdmin):
-    list_display = ('retailer', 'remaining')
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)

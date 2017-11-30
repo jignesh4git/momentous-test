@@ -1,0 +1,39 @@
+{% extends current_module.base_template %}
+{% load i18n material_form material_frontend %}
+{% block content %}
+{% load static %}
+
+
+<div class="left-panel">
+    <div class="card list-card">
+        <div class="card-content">
+            <div class="dataTables_wrapper no-footer" id="table_wrapper"><table role="grid" id="table" class="table bordered dataTable no-footer" data-form-control="datatable" style="width: 100%;"><thead>
+                    <tr role="row">
+                        <th aria-label="Retailer: activate to sort column ascending" style="width: 142px;" colspan="1" rowspan="1" aria-controls="table" tabindex="0" data-name="retailer" class="retailer sorting">Store Name</th>
+                        <th aria-label="Invoice Id: activate to sort column ascending" style="width: 142px;" colspan="1" rowspan="1" aria-controls="table" tabindex="0" data-name="order_date" class="order_d sorting">Invoice Id</th>
+                        <th aria-label="Order date: activate to sort column ascending" style="width: 134px;" colspan="1" rowspan="1" aria-controls="table" tabindex="0" data-name="invoice_id" class="invoice_id sorting">Order Date</th>
+                        <th aria-label="Order Status: activate to sort column ascending" style="width: 144px;" colspan="1" rowspan="1" aria-controls="table" tabindex="0" data-name="order_status" class="order_status sorting">Order Status</th>
+                        <th aria-label="Bill Total: activate to sort column ascending" style="width: 99px;" colspan="1" rowspan="1" aria-controls="table" tabindex="0" data-name="bill_total" class="bill_total sorting">Bill Total</th></tr>
+                </thead>
+
+                <tbody>
+                {% for order in orders %}
+                <tr class="odd" role="row">
+                    <td>{{ order.retailer }}</td>
+                    <td><a href="/partner/orderitem/{{order.id}}/detail"> {{ order.invoice_id }}</a></td>
+                    <td>{{ order.order_date }}</a></td>
+                    <td>{{ order.order_status }}</td>
+                    <td></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table><div id="table_paginate" class="dataTables_paginate paging_simple_numbers"><a id="table_previous" tabindex="0" data-dt-idx="0" aria-controls="table" class="paginate_button previous disabled">⟨</a><span><a tabindex="0" data-dt-idx="1" aria-controls="table" class="paginate_button current">1</a></span><a id="table_next" tabindex="0" data-dt-idx="2" aria-controls="table" class="paginate_button next disabled">⟩</a></div></div>
+        </div>
+    </div>
+</div>
+<div class="fixed-action-btn">
+
+      <a class="btn-floating btn-large waves-effect waves-light red z-depth-2" href="/partner/order/add/"><i class="large material-icons">add</i></a>
+
+</div>
+{% endblock content %}
