@@ -8,6 +8,8 @@ from django.contrib import admin
 
 class Partner(models.Model):
     name = models.CharField(max_length=250)
+
+
 class Distributor(models.Model):
     user = models.OneToOneField(User)
     mobile_number = PhoneNumberField()
@@ -20,6 +22,7 @@ class Distributor(models.Model):
     def __str__(self):
         return "{}".format(self.company_name)
 
+
 class Retailer(models.Model):
     user = models.OneToOneField(User)
     distributor = models.ForeignKey(Distributor, on_delete=models.CASCADE)
@@ -30,8 +33,10 @@ class Retailer(models.Model):
     pin_code = models.CharField(max_length=255)
     GSTIN = models.CharField(max_length=255, blank=True)
     PAN = models.CharField(max_length=255, blank=True)
+
     def __str__(self):
         return "{}".format(self.store_name, self.store_number)
+
 
 class Product(models.Model):
     distributor = models.ForeignKey(Distributor)
@@ -40,14 +45,14 @@ class Product(models.Model):
     packing = models.CharField(max_length=255, blank=False)
     price = models.CharField(max_length=255, blank=True)
     GST_CHOICES = (
-        (0,'0'),
-        (5,'5'),
-        (12,'12'),
-        (18,'18'),
-        (28,'28'),
+        (0, '0'),
+        (5, '5'),
+        (12, '12'),
+        (18, '18'),
+        (28, '28'),
     )
-    s_gst = models.IntegerField(choices=GST_CHOICES,default=0)
-    c_gst = models.IntegerField(choices=GST_CHOICES,default=0)
+    s_gst = models.IntegerField(choices=GST_CHOICES, default=0)
+    c_gst = models.IntegerField(choices=GST_CHOICES, default=0)
     final_price = models.CharField(max_length=255, blank=True)
     offer_id = models.CharField(max_length=255, blank=True)
     active = models.BooleanField()
@@ -56,6 +61,7 @@ class Product(models.Model):
 
     def __str__(self):
         return "{}".format(self.name, self.packing)
+
 
 class Order(models.Model):
     retailer = models.ForeignKey(Retailer, related_name='retailer')
@@ -70,45 +76,54 @@ class Order(models.Model):
     other_charge = models.CharField(max_length=255, blank=True)
     bill_total = models.CharField(max_length=255, blank=True)
     invoice_id = models.CharField(max_length=255)
+
     # delivery_date = models.DateField(blank=True)
     # Metadata
     # class Meta:
-        # ordering = ["-order_date"]
+    # ordering = ["-order_date"]
     def make_id(self):
         q = Order.objects.values_list('id', flat=True).order_by('-id')[:1]
         if len(q):
             self.number = str(self.id) if self.id else str(int(q.get()) + 1)
         else:
             self.number = 1
-        return "SEDIST"+str(self.distributor_id)+"RET"+str(self.retailer_id)+"-"+str(self.number)
+        return "SEDIST" + str(self.distributor_id) + "RET" + str(self.retailer_id) + "-" + str(self.number)
+
     def __str__(self):
-            return "{}".format(self.id, self.retailer)
-    def save(self,*args,**kwargs):
+        return "{}".format(self.id, self.retailer)
+
+    def save(self, *args, **kwargs):
         if not self.invoice_id:
             self.invoice_id = self.make_id()
-        super(Order,self).save(*args,**kwargs)
+        super(Order, self).save(*args, **kwargs)
+
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)    
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product)
     item_quantity = models.IntegerField()
+
     # item_price = models.IntegerField(blank=True)
     # total = models.IntegerField(blank=True)
     # offer_id = models.CharField(max_length=25, blank=True)
     # s_gst = models.CharField(max_length=255, blank=True)
     # c_gst = models.CharField(max_length=255, blank=True)
     class Meta:
-        verbose_name_plural ="Invoices"  
+        verbose_name_plural = "Invoices"
+
     def __str__(self):
         return "{}".format(self.order_id, self.id, self.product_id)
+
 
 class ConnectedRetailer(models.Model):
     distributor = models.ForeignKey(Distributor, on_delete=models.CASCADE)
     retailer = models.ForeignKey(Retailer, on_delete=models.CASCADE)
     credit_limit = models.IntegerField()
     remaining = models.IntegerField()
+
     def __str__(self):
         return "{}".format(self.distributor, self.retailer)
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
