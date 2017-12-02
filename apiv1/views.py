@@ -242,11 +242,11 @@ class MyInvoicesView(APIView):
         if user_type == 'distributor':
             connected_retailers = models.Retailer.objects.filter(distributor=distributor)
 
-            response_data = {}
+            response_data = []
             for retailer in connected_retailers:
                 retailer_orders = models.Order.objects.filter(distributor=distributor, retailer=retailer)
                 orders_data = data_serializers.OrderSerializer(retailer_orders, many=True).data
-                response_data[retailer.id] = orders_data
+                response_data.append({"retailer_id": retailer.id, "orders": orders_data})
 
             return Response({'status': '200', 'data': response_data})
 
