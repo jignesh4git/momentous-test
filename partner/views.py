@@ -85,7 +85,7 @@ class OrderItemView(ListModelView):
     def get_queryset(self):
         order_id = self.kwargs['pk']
         # invoice_id = models.Order.objects.filter(id=order_id)
-        return models.OrderItem.objects.filter(order_id__in=order_id)
+        return models.OrderItem.objects.filter(order_id=order_id)
 
 class RetailerViewSet(ModelViewSet):
     model = models.Retailer
