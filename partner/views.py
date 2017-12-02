@@ -66,7 +66,7 @@ class OrderDetailView(TemplateView,ListModelView):
         context['order'] = models.Order.objects.filter(id=order_id)
         context['distributor'] = models.Distributor.objects.filter(id__in=dist_id)
         context['retailer'] = models.Retailer.objects.filter(id__in=ret_id)
-        context['orderitems'] = models.OrderItem.objects.filter(order_id__in=order_id)
+        context['orderitems'] = models.OrderItem.objects.filter(order_id=order_id)
         return context
 
 class OrderItemViewSet(ModelViewSet):
