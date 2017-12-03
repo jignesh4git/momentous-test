@@ -75,7 +75,7 @@ class Order(models.Model):
     other_charge_description = models.CharField(max_length=255, blank=True)
     other_charge = models.CharField(max_length=255, blank=True)
     bill_total = models.CharField(max_length=255, blank=True)
-    invoice_id = models.CharField(max_length=255)
+    invoice_id = models.CharField(max_length=255,blank=True)
 
     # delivery_date = models.DateField(blank=True)
     # Metadata
