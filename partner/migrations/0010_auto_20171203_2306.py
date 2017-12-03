@@ -14,7 +14,6 @@ class Migration(migrations.Migration):
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('partner', '0009_auto_20171203_1228'),
     ]
-
     operations = [
         migrations.CreateModel(
             name='ConnectedDistributor',
