@@ -84,6 +84,25 @@ class ConnectedRetailerAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
+class ConnectedDistributorAdmin(admin.ModelAdmin):
+    list_display = ('distributor', 'remaining')
+
+    def get_queryset(self, request):
+        if not request.user.is_superuser:
+            manufacturer = models.Manufacturer.objects.filter(user=request.user)
+            return models.ConnectedDistributor.objects.filter(manufacturer=manufacturer)
+        return models.ConnectedDistributor.objects.all()
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        manuf = models.Manufacturer.objects.filter(user=request.user)
+        if not request.user.is_superuser:
+            if db_field.name == "manufacturer":
+                kwargs["queryset"] = manuf
+            if db_field.name == "distributor":
+                kwargs["queryset"] = models.Distributor.objects.filter(manufacturer=manuf)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('code', 'name', 'packing', 'price', 's_gst', 'c_gst', 'final_price', 'offer_id', 'active')
 
@@ -197,6 +216,7 @@ admin.site.register(models.Manufacturer, ManufacturerAdmin)
 admin.site.register(models.Distributor, DistributorAdmin)
 admin.site.register(models.Retailer, RetailerAdmin)
 admin.site.register(models.ConnectedRetailer, ConnectedRetailerAdmin)
+admin.site.register(models.ConnectedDistributor, ConnectedDistributorAdmin)
 admin.site.register(models.Product, ProductAdmin)
 admin.site.register(models.Order, OrderAdmin)
 admin.site.register(models.OrderItem, OrderItemAdmin)
