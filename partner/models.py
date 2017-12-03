@@ -26,7 +26,7 @@ class Manufacturer(models.Model):
 class Distributor(models.Model):
     user = models.OneToOneField(User)
     mobile_number = PhoneNumberField()
-    manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE)
+    manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE, null=True)
     company_name = models.CharField(max_length=255, blank=False)
     company_address = models.CharField(max_length=255)
     pin_code = models.CharField(max_length=255)
@@ -54,7 +54,7 @@ class Retailer(models.Model):
 
 class Product(models.Model):
     distributor = models.ForeignKey(Distributor)
-    manufacturer = models.ForeignKey(Manufacturer)
+    manufacturer = models.ForeignKey(Manufacturer, null=True)
     code = models.CharField(max_length=255, blank=True)
     name = models.CharField(max_length=255, blank=False)
     packing = models.CharField(max_length=255, blank=False)
@@ -81,7 +81,7 @@ class Product(models.Model):
 class Order(models.Model):
     retailer = models.ForeignKey(Retailer, related_name='retailer')
     distributor = models.ForeignKey(Distributor, related_name='distributor')
-    manufacturer = models.ForeignKey(Manufacturer, related_name='manufacturer')
+    manufacturer = models.ForeignKey(Manufacturer, related_name='manufacturer', null=True)
     order_date = models.DateField(auto_created=True)
     order_status = models.CharField(max_length=255, blank=False)
     # requested_delivery_time = models.DateField(blank=True)
