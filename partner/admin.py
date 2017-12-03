@@ -1,48 +1,79 @@
 from django.contrib import admin
 from . import models
 from django.contrib.auth.models import Group
+
+
 # Register your models here.
+
+class ManufacturerAdmin(admin.ModelAdmin):
+    pass
+    list_display = ('company_name', 'company_address')
+
+    def get_queryset(self, request):
+        if not request.user.is_superuser:
+            return models.Manufacturer.objects.filter(user=request.user)
+        return models.Manufacturer.objects.all()
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if not request.user.is_superuser:
+            if db_field.name == 'user':
+                dist_user_id = models.Distributor.objects.distinct('user').values('user')
+                manif_user_id = models.Manufacturer.objects.distinct('user').values('user')
+                kwargs['queryset'] = models.User.objects.exclude(id__in=dist_user_id) & models.User.objects.exclude(
+                    id__in=manif_user_id) & models.User.objects.exclude(id=1)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 class DistributorAdmin(admin.ModelAdmin):
     pass
-    list_display = ('company_name','company_address')
+    list_display = ('company_name', 'company_address')
+
     def get_queryset(self, request):
         if not request.user.is_superuser:
             return models.Distributor.objects.filter(user=request.user)
         return models.Distributor.objects.all()
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if not request.user.is_superuser:
             if db_field.name == 'user':
                 ret_user_id = models.Retailer.objects.distinct('user').values('user')
                 dist_user_id = models.Distributor.objects.distinct('user').values('user')
-                kwargs['queryset'] = models.User.objects.exclude(id__in= ret_user_id) & models.User.objects.exclude(id__in = dist_user_id) & models.User.objects.exclude(id = 1)
+                kwargs['queryset'] = models.User.objects.exclude(id__in=ret_user_id) & models.User.objects.exclude(
+                    id__in=dist_user_id) & models.User.objects.exclude(id=1)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 class RetailerAdmin(admin.ModelAdmin):
     pass
     list_display = ('store_name', 'store_number', 'store_address', 'user')
+
     def get_queryset(self, request):
         if not request.user.is_superuser:
             distributor = models.Distributor.objects.filter(user=request.user)
             return models.Retailer.objects.filter(distributor=distributor)
         return models.Retailer.objects.all()
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if not request.user.is_superuser:
             if db_field.name == 'user':
                 ret_user_id = models.Retailer.objects.distinct('user').values('user')
                 dist_user_id = models.Distributor.objects.distinct('user').values('user')
-                kwargs['queryset'] = models.User.objects.exclude(id__in= ret_user_id) & models.User.objects.exclude(id__in = dist_user_id) & models.User.objects.exclude(id = 1)
+                kwargs['queryset'] = models.User.objects.exclude(id__in=ret_user_id) & models.User.objects.exclude(
+                    id__in=dist_user_id) & models.User.objects.exclude(id=1)
             if db_field.name == 'distributor':
-                kwargs['queryset'] = models.Distributor.objects.filter(user = request.user)
+                kwargs['queryset'] = models.Distributor.objects.filter(user=request.user)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 class ConnectedRetailerAdmin(admin.ModelAdmin):
     list_display = ('retailer', 'remaining')
+
     def get_queryset(self, request):
         if not request.user.is_superuser:
             distributor = models.Distributor.objects.filter(user=request.user)
             return models.ConnectedRetailer.objects.filter(distributor=distributor)
         return models.ConnectedRetailer.objects.all()
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         dist = models.Distributor.objects.filter(user=request.user)
         if not request.user.is_superuser:
@@ -52,8 +83,10 @@ class ConnectedRetailerAdmin(admin.ModelAdmin):
                 kwargs["queryset"] = models.Retailer.objects.filter(distributor=dist)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name', 'packing', 'price', 's_gst', 'c_gst', 'final_price','offer_id', 'active')
+    list_display = ('code', 'name', 'packing', 'price', 's_gst', 'c_gst', 'final_price', 'offer_id', 'active')
+
     def get_queryset(self, request):
         distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
@@ -62,18 +95,20 @@ class ProductAdmin(admin.ModelAdmin):
                 distributor = models.ConnectedRetailer.objects.filter(retailer=retailer).values('distributor')
             return models.Product.objects.filter(distributor__in=distributor)
         return models.Product.objects.all()
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         dist = models.Distributor.objects.filter(user=request.user)
         ret = models.Retailer.objects.filter(user=request.user)
         if not request.user.is_superuser:
             if dist:
                 if db_field.name == 'distributor':
-                    kwargs['queryset'] = models.Distributor.objects.filter(user = request.user)
+                    kwargs['queryset'] = models.Distributor.objects.filter(user=request.user)
             if ret:
                 if db_field.name == 'distributor':
                     dist = models.ConnectedRetailer.objects.filter(retailer=ret).values('distributor')
                     kwargs['queryset'] = models.Distributor.objects.filter(id__in=dist)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 class OrderAdmin(admin.ModelAdmin):
     # distributor = models.ForeignKey(Distributor, related_name="dconnects",related_query_name="dconnect")
@@ -83,27 +118,33 @@ class OrderAdmin(admin.ModelAdmin):
     readonly_fields = (
         'invoice_id',
     )
+
     class Meta:
         ordering = ["-order_date"]
+
     def get_queryset(self, request):
         if not request.user.is_superuser:
             distributor = models.Distributor.objects.filter(user=request.user)
             retailer = models.Retailer.objects.filter(user=request.user)
             return models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(retailer=retailer)
         return models.Order.objects.all()
+
     def make_id(self):
         q = Order.objects.values_list('id', flat=True).order_by('-id')[:1]
         if len(q):
             self.number = str(self.id) if self.id else str(int(q.get()) + 1)
         else:
             self.number = 1
-        return "SEDIST"+str(self.distributor_id)+"RET"+str(self.retailer_id)+"-"+str(self.number)
+        return "SEDIST" + str(self.distributor_id) + "RET" + str(self.retailer_id) + "-" + str(self.number)
+
     def __str__(self):
-            return "{}".format(self.id, self.retailer)
+        return "{}".format(self.id, self.retailer)
+
     def save(self, *args, **kwargs):
         if not self.invoice_id:
             self.invoice_id = self.make_id()
         super(Order, self).save(*args, **kwargs)
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         dist = models.Distributor.objects.filter(user=request.user)
         ret = models.Retailer.objects.filter(user=request.user)
@@ -122,22 +163,27 @@ class OrderAdmin(admin.ModelAdmin):
                     kwargs["queryset"] = models.Distributor.objects.filter(id__in=distributor_id)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+
 class OrderItemAdmin(admin.ModelAdmin):
     pass
     list_display = ('order', 'product', 'item_quantity')
+
     def get_queryset(self, request):
         if not request.user.is_superuser:
             distributor = models.Distributor.objects.filter(user=request.user)
             retailer = models.Retailer.objects.filter(user=request.user)
-            order = models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(retailer=retailer)
+            order = models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(
+                retailer=retailer)
             return models.OrderItem.objects.filter(order__in=order)
         return models.OrderItem.objects.all()
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         dist = models.Distributor.objects.filter(user=request.user)
         ret = models.Retailer.objects.filter(user=request.user)
         if not request.user.is_superuser:
             if db_field.name == 'order':
-                kwargs['queryset'] = models.Order.objects.filter(distributor=dist) | models.Order.objects.filter(retailer=ret)
+                kwargs['queryset'] = models.Order.objects.filter(distributor=dist) | models.Order.objects.filter(
+                    retailer=ret)
             if db_field.name == 'product':
                 if ret:
                     distributor_id = models.ConnectedRetailer.objects.filter(retailer=ret).values('distributor')
@@ -146,9 +192,11 @@ class OrderItemAdmin(admin.ModelAdmin):
                     kwargs['queryset'] = models.Product.objects.filter(distributor=dist)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-admin.site.register(models.Distributor,DistributorAdmin)
-admin.site.register(models.Retailer,RetailerAdmin)
-admin.site.register(models.ConnectedRetailer,ConnectedRetailerAdmin)
-admin.site.register(models.Product,ProductAdmin)
-admin.site.register(models.Order,OrderAdmin)
-admin.site.register(models.OrderItem,OrderItemAdmin)
+
+admin.site.register(models.Manufacturer, ManufacturerAdmin)
+admin.site.register(models.Distributor, DistributorAdmin)
+admin.site.register(models.Retailer, RetailerAdmin)
+admin.site.register(models.ConnectedRetailer, ConnectedRetailerAdmin)
+admin.site.register(models.Product, ProductAdmin)
+admin.site.register(models.Order, OrderAdmin)
+admin.site.register(models.OrderItem, OrderItemAdmin)

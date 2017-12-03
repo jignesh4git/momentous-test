@@ -10,9 +10,23 @@ class Partner(models.Model):
     name = models.CharField(max_length=250)
 
 
+class Manufacturer(models.Model):
+    user = models.OneToOneField(User)
+    mobile_number = PhoneNumberField()
+    company_name = models.CharField(max_length=255, blank=False)
+    company_address = models.CharField(max_length=255)
+    pin_code = models.CharField(max_length=255)
+    GSTIN = models.CharField(max_length=255, blank=True)
+    PAN = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.company_name)
+
+
 class Distributor(models.Model):
     user = models.OneToOneField(User)
     mobile_number = PhoneNumberField()
+    manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE)
     company_name = models.CharField(max_length=255, blank=False)
     company_address = models.CharField(max_length=255)
     pin_code = models.CharField(max_length=255)
@@ -40,6 +54,7 @@ class Retailer(models.Model):
 
 class Product(models.Model):
     distributor = models.ForeignKey(Distributor)
+    manufacturer = models.ForeignKey(Manufacturer)
     code = models.CharField(max_length=255, blank=True)
     name = models.CharField(max_length=255, blank=False)
     packing = models.CharField(max_length=255, blank=False)
@@ -66,6 +81,7 @@ class Product(models.Model):
 class Order(models.Model):
     retailer = models.ForeignKey(Retailer, related_name='retailer')
     distributor = models.ForeignKey(Distributor, related_name='distributor')
+    manufacturer = models.ForeignKey(Manufacturer, related_name='manufacturer')
     order_date = models.DateField(auto_created=True)
     order_status = models.CharField(max_length=255, blank=False)
     # requested_delivery_time = models.DateField(blank=True)
@@ -123,6 +139,16 @@ class ConnectedRetailer(models.Model):
 
     def __str__(self):
         return "{}".format(self.distributor, self.retailer)
+
+
+class ConnectedDistributor(models.Model):
+    distributor = models.ForeignKey(Distributor, on_delete=models.CASCADE)
+    manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE)
+    credit_limit = models.IntegerField()
+    remaining = models.IntegerField()
+
+    def __str__(self):
+        return "{}".format(self.distributor, self.manufacturer)
 
 
 class UserProfile(models.Model):
