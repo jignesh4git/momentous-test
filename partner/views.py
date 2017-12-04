@@ -21,11 +21,12 @@ class ProductViewSet(ModelViewSet):
     list_display = ('code', 'name', 'packing', 'price', 's_gst', 'c_gst', 'final_price', 'offer_id', 'active')
 
     def get_queryset(self, request):
+        manufacturer = models.Manufacturer.objects.filter(user=request.user)
         distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
         if retailer:
             distributor = models.ConnectedRetailer.objects.filter(retailer=retailer).values('distributor')
-        return models.Product.objects.filter(distributor__in=distributor)
+        return models.Product.objects.filter(manufacturer__in=manufacturer) | models.Product.objects.filter(distributor__in=distributor)
 
 
 class OrderViewSet(ModelViewSet):
