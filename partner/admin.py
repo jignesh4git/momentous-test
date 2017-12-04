@@ -30,7 +30,8 @@ class DistributorAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         if not request.user.is_superuser:
-            return models.Distributor.objects.filter(user=request.user)
+            manufacturer = models.Manufacturer.objects.filter(user=request.user)
+            return models.Distributor.objects.filter(user=request.user) | models.Distributor.objects.filter(manufacturer__in = manufacturer)
         return models.Distributor.objects.all()
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -107,12 +108,13 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ('code', 'name', 'packing', 'price', 's_gst', 'c_gst', 'final_price', 'offer_id', 'active')
 
     def get_queryset(self, request):
+        manufacturer = models.Manufacturer.objects.filter(user=request.user)
         distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
         if not request.user.is_superuser:
             if retailer:
                 distributor = models.ConnectedRetailer.objects.filter(retailer=retailer).values('distributor')
-            return models.Product.objects.filter(distributor__in=distributor)
+            return models.Product.objects.filter(manufacturer__in=manufacturer) | models.Product.objects.filter(distributor__in=distributor)
         return models.Product.objects.all()
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
