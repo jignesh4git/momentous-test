@@ -13,7 +13,6 @@ class ManufacturerAdmin(admin.ModelAdmin):
         if not request.user.is_superuser:
             return models.Manufacturer.objects.filter(user=request.user)
         return models.Manufacturer.objects.all()
-
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if not request.user.is_superuser:
             if db_field.name == 'user':
