@@ -75,6 +75,9 @@ class OrderDetailView(TemplateView, ListModelView):
         context['distributor'] = models.Distributor.objects.filter(id__in=dist_id)
         context['retailer'] = models.Retailer.objects.filter(id__in=ret_id)
         context['orderitems'] = models.OrderItem.objects.filter(order_id=order_id)
+        orderproducts = models.Product.objects.in_bulk(context['orderitems'])
+        context['orderproducts'] = [orderproducts[orderproduct] for orderproduct in orderproducts]
+
         return context
 
 

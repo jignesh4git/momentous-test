@@ -95,14 +95,27 @@
 											</tr>
 										</thead>
 										<tbody>
-										{% for orderitems in orderitems %}
-											<tr>
-												<td class="text-center">1</td>
-												<td>{{ orderitems.product }}</td>
-												<td>{{ orderitems.item_quantity }}</td>
-												<td class="text-right"> {{ orderitems.final_price }}<i class="fa fa-inr"></i></td>
-											</tr>
-										{% endfor %}
+										{% for orderproduct in orderproducts %}
+										<tr>
+											<td>{{ orderproduct.code }}</td>
+											<td>{{ orderproduct.name }}</td>
+											<td>{% for orderitem in orderitems %}
+													{% if orderproduct.id == orderitem.id %}
+													{{ orderitem.item_quantity }}
+													{% endif %}
+												{% endfor %}
+											</td>
+											<td class="text-right">{{ orderproduct.final_price }}<i class="fa fa-inr"></i></td>
+										</tr>
+										{% endfor%}
+										<!--{% for orderitem in orderitems %}-->
+											<!--<tr>-->
+												<!--<td class="text-center">{{ orderproduct.code }} </td>-->
+												<!--<td>{{ orderitem.product }}</td>-->
+												<!--<td>{{ orderitem.item_quantity }}</td>-->
+												<!--<td class="text-right"> {{ orderpoduct.final_price }}<i class="fa fa-inr"></i></td>-->
+											<!--</tr>-->
+										<!--{% endfor %}-->
 											<tr>
 												<td colspan="2" rowspan="4">Invoice notes</h3>
 													<h3 class="text-light opacity-5">
