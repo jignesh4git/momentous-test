@@ -1,7 +1,22 @@
+from django import forms
 from django.contrib import admin
 from . import models
+from .models import Order
 from django.contrib.auth.models import Group
 
+# define the custom Form
+
+# class OrderForm(forms.ModelForm):
+#     class Meta:
+#         model = Order
+#         fields = '__all__'
+#
+#     def __init__(self, *args, **kwargs):
+#         self.user = kwargs.pop('user')
+#         dist = models.Distributor.objects.filter(user=request.user)
+#         if dist:
+#             del self.fields['retailer']
+#         super(OrderForm, self).__init__(*args, **kwargs)
 
 # Register your models here.
 
@@ -133,14 +148,25 @@ class ProductAdmin(admin.ModelAdmin):
 class OrderAdmin(admin.ModelAdmin):
     # distributor = models.ForeignKey(Distributor, related_name="dconnects",related_query_name="dconnect")
     # retailer = models.ForeignKey(Retailer, related_name="rconnects",related_query_name="rconnect")
+    # models = Order
+    # form = OrderForm
     pass
     list_display = ('order_date', 'invoice_id', 'retailer', 'order_status', 'bill_total')
     readonly_fields = (
         'invoice_id',
     )
-
     class Meta:
         ordering = ["-order_date"]
+
+    def get_form(self, request, obj=None, **kwargs):
+        exclude = ()
+        dist = models.Distributor.objects.filter(user=request.user)
+        man = models.Manufacturer.objects.filter(user=request.user)
+        ret = models.Retailer.objects.filter(user=request.user)
+        if dist:
+            exclude += ('retailer',)
+        self.exclude = exclude
+        return super(OrderAdmin, self).get_form(request, obj, **kwargs)
 
     def get_queryset(self, request):
         if not request.user.is_superuser:
@@ -163,6 +189,8 @@ class OrderAdmin(admin.ModelAdmin):
     def save(self, *args, **kwargs):
         if not self.invoice_id:
             self.invoice_id = self.make_id()
+        if not self.retailer:
+            self.retailer = models.Retailer.objects.filter(user=request.user)
         super(Order, self).save(*args, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):

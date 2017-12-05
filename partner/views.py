@@ -11,7 +11,6 @@ from django.db.models import When, Q, F
 from django.views import generic
 from django.views.generic import TemplateView
 
-
 class DistributorViewSet(ModelViewSet):
     model = models.Distributor
 
@@ -36,6 +35,10 @@ class OrderViewSet(ModelViewSet):
     def get_queryset(self, request):
         distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
+        if request.method == "POST":
+            form = OrderForm(request.POST, user=request.user)
+        else:
+            form = OrderForm(user=request.user)
         return models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(retailer=retailer)
 
     def get_detail_view(request):

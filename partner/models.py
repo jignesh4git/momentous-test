@@ -79,7 +79,7 @@ class Product(models.Model):
 
 
 class Order(models.Model):
-    retailer = models.ForeignKey(Retailer, related_name='retailer')
+    retailer = models.ForeignKey(Retailer, related_name='retailer', null=True)
     distributor = models.ForeignKey(Distributor, related_name='distributor')
     manufacturer = models.ForeignKey(Manufacturer, related_name='manufacturer', null=True)
     order_date = models.DateField(auto_created=True)
@@ -95,8 +95,8 @@ class Order(models.Model):
 
     # delivery_date = models.DateField(blank=True)
     # Metadata
-    # class Meta:
-    # ordering = ["-order_date"]
+    class Meta:
+        ordering = ["-order_date"]
     def make_id(self):
         q = Order.objects.values_list('id', flat=True).order_by('-id')[:1]
         if len(q):
