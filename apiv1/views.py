@@ -33,8 +33,13 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = data_serializers.ProductSerializer
 
     def get_queryset(self):
-        distributor_id = self.request.query_params['id']
-        return models.Product.objects.filter(distributor__user_id__exact=distributor_id)
+        isManufacturer = self.request.query_params['from']
+        if isManufacturer:
+            manufacturer = self.request.query_params['id']
+            return models.Product.objects.filter(manufacturer__user_id__exact=manufacturer)
+        else:
+            distributor_id = self.request.query_params['id']
+            return models.Product.objects.filter(distributor__user_id__exact=distributor_id)
 
 
 class PlaceOrder(APIView):
