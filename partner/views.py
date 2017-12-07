@@ -33,9 +33,10 @@ class OrderViewSet(ModelViewSet):
     list_display = ('order_date', 'invoice_id', 'retailer', 'order_status', 'bill_total')
 
     def get_queryset(self, request):
+        manufacturer = models.Distributor.objects.filter(user=request.user)
         distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
-        return models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(retailer=retailer)
+        return models.Order.objects.filter(manufacturer = manufacturer) | models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(retailer=retailer)
 
     def get_detail_view(request):
         return OrderDetailView.as_view()
