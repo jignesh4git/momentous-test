@@ -33,9 +33,10 @@ class OrderViewSet(ModelViewSet):
     list_display = ('order_date', 'invoice_id', 'retailer', 'order_status', 'bill_total')
 
     def get_queryset(self, request):
+        manufacturer = models.Distributor.objects.filter(user=request.user)
         distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
-        return models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(retailer=retailer)
+        return models.Order.objects.filter(manufacturer = manufacturer) | models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(retailer=retailer)
 
     def get_detail_view(request):
         return OrderDetailView.as_view()
@@ -61,9 +62,9 @@ class OrderInvoiceView(TemplateView, ListModelView):
 
 
 class OrderDetailView(TemplateView, ListModelView):
-    model = models.Order
-    template_name = 'partner/order_detail.html'
-
+    model = models.OrderItem
+    template_name = 'partner/orderdetail.html'
+    list_display = ('order', 'product', 'item_quantity')
     def get_context_data(self, **kwargs):
         context = super(OrderDetailView, self).get_context_data(**kwargs)
         order_id = self.kwargs['pk']
