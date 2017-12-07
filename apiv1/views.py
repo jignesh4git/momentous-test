@@ -23,6 +23,12 @@ class DistributorViewSet(viewsets.ModelViewSet):
 
 
 # ViewSets define the view behavior.
+class ManufacturerViewSet(viewsets.ModelViewSet):
+    queryset = models.Manufacturer.objects.all()
+    serializer_class = data_serializers.ManufacturerAccountSerializer
+
+
+# ViewSets define the view behavior.
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = data_serializers.ProductSerializer
 
