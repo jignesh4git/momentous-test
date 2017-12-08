@@ -53,12 +53,11 @@ class Retailer(models.Model):
 
 
 class Product(models.Model):
-    distributor = models.ForeignKey(Distributor)
+    # distributor = models.ForeignKey(Distributor)
     manufacturer = models.ForeignKey(Manufacturer, null=True)
     code = models.CharField(max_length=255, blank=True)
     name = models.CharField(max_length=255, blank=False)
     packing = models.CharField(max_length=255, blank=False)
-    price = models.CharField(max_length=255, blank=True)
     GST_CHOICES = (
         (0, '0'),
         (5, '5'),
@@ -68,15 +67,34 @@ class Product(models.Model):
     )
     s_gst = models.IntegerField(choices=GST_CHOICES, default=0)
     c_gst = models.IntegerField(choices=GST_CHOICES, default=0)
-    final_price = models.CharField(max_length=255, blank=True)
-    offer_id = models.CharField(max_length=255, blank=True)
-    active = models.BooleanField()
     category = models.CharField(max_length=255, blank=True)
     HSN = models.CharField(max_length=255, blank=True)
-
+    active = models.BooleanField()
     def __str__(self):
-        return "{}".format(self.name, self.packing)
+        return "{}".format(self.name, self.manufacturer, self.packing)
 
+class DistributorProduct(models.Model):
+    manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE)
+    distributor = models.ForeignKey(Distributor, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    price = models.CharField(max_length=255, blank=True)
+    offer_id = models.CharField(max_length=255, blank=True)
+    final_price = models.CharField(max_length=255, blank=True)
+    active = models.BooleanField()
+    def __str__(self):
+        return "{}".format(self.product,self.distributor,self.manufacturer)
+
+class RetailerProduct(models.Model):
+    manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE)
+    distributor = models.ForeignKey(Distributor, on_delete=models.CASCADE)
+    retailer = models.ForeignKey(Retailer, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    price = models.CharField(max_length=255, blank=True)
+    offer_id = models.CharField(max_length=255, blank=True)
+    final_price = models.CharField(max_length=255, blank=True)
+    active = models.BooleanField()
+    def __str__(self):
+        return "{}".format(self.retailer,self.distributor)
 
 class Order(models.Model):
     retailer = models.ForeignKey(Retailer, related_name='retailer', null=True)
@@ -148,7 +166,7 @@ class ConnectedDistributor(models.Model):
     remaining = models.IntegerField()
 
     def __str__(self):
-        return "{}".format(self.distributor, self.manufacturer)
+        return "{}".format(self.distributor,self.manufacturer)
 
 
 class UserProfile(models.Model):
