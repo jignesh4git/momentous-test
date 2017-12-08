@@ -33,7 +33,7 @@ class OrderViewSet(ModelViewSet):
     list_display = ('order_date', 'invoice_id', 'retailer', 'order_status', 'bill_total')
 
     def get_queryset(self, request):
-        manufacturer = models.Distributor.objects.filter(user=request.user)
+        manufacturer = models.Manufacturer.objects.filter(user=request.user)
         distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
         return models.Order.objects.filter(manufacturer = manufacturer) | models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(retailer=retailer)
@@ -49,9 +49,10 @@ class OrderInvoiceView(TemplateView, ListModelView):
 
     def get(self, request, **kwargs):
         context = super(OrderInvoiceView, self).get_context_data(**kwargs)
+        manufacturer = models.Manufacturer.objects.filter(user=request.user)
         distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
-        order = models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(retailer=retailer)
+        order = models.Order.objects.filter(manufacturer = manufacturer) | models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(retailer=retailer)
         order_id = models.OrderItem.objects.filter(order__in=order).order_by('retailer')
         context['orders'] = order
         return render(
@@ -62,9 +63,9 @@ class OrderInvoiceView(TemplateView, ListModelView):
 
 
 class OrderDetailView(TemplateView, ListModelView):
-    model = models.OrderItem
-    template_name = 'partner/orderdetail.html'
-    list_display = ('order', 'product', 'item_quantity')
+    model = models.Order
+    template_name = 'partner/order_detail.html'
+
     def get_context_data(self, **kwargs):
         context = super(OrderDetailView, self).get_context_data(**kwargs)
         order_id = self.kwargs['pk']
@@ -86,9 +87,10 @@ class OrderItemViewSet(ModelViewSet):
     model = models.OrderItem
 
     def get_queryset(self, request):
+        manufacturer = models.Manufacturer.objects.filter(user=request.user)
         distributor = models.Distributor.objects.filter(user=request.user)
         retailer = models.Retailer.objects.filter(user=request.user)
-        order = models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(retailer=retailer)
+        order = models.Order.objects.filter(manufacturer = manufacturer) | models.Order.objects.filter(distributor=distributor) | models.Order.objects.filter(retailer=retailer)
         return models.OrderItem.objects.filter(order__in=order)
 
     def get_detail_view(request):

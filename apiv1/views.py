@@ -23,12 +23,23 @@ class DistributorViewSet(viewsets.ModelViewSet):
 
 
 # ViewSets define the view behavior.
+class ManufacturerViewSet(viewsets.ModelViewSet):
+    queryset = models.Manufacturer.objects.all()
+    serializer_class = data_serializers.ManufacturerAccountSerializer
+
+
+# ViewSets define the view behavior.
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = data_serializers.ProductSerializer
 
     def get_queryset(self):
-        distributor_id = self.request.query_params['id']
-        return models.Product.objects.filter(distributor__user_id__exact=distributor_id)
+        isManufacturer = self.request.query_params['from']
+        if isManufacturer:
+            manufacturer = self.request.query_params['id']
+            return models.Product.objects.filter(manufacturer__user_id__exact=manufacturer)
+        else:
+            distributor_id = self.request.query_params['id']
+            return models.Product.objects.filter(distributor__user_id__exact=distributor_id)
 
 
 class PlaceOrder(APIView):
@@ -39,18 +50,14 @@ class PlaceOrder(APIView):
 
     def post(self, request, *args, **kwargs):
         # parse data from POST request
-        retailer_id = request.user.id
-        distributor_id = request.data['distributor_id']
+        isForManufacturer = False
+
+        if request.data['manufacturer_id'] is not None:
+            isForManufacturer = True
+
+        requester_id = request.user.id
         products = request.data['products']
         quantity = request.data['quantity']
-
-        # fetch retailer and distributor accounts
-        retailer = models.Retailer.objects.filter(user_id=retailer_id).first()
-        distributor = models.Distributor.objects.filter(user_id=distributor_id).first()
-
-        if retailer is None or distributor is None:
-            return Response(status=400, exception=True,
-                            data={'error': 'you can not place order with this distributor.'})
 
         # fetch all products to validate ids
         for item_id in products:
@@ -59,11 +66,24 @@ class PlaceOrder(APIView):
                 return Response(status=400, exception=True,
                                 data={'error': 'requested product with id ' + str(item_id) + ' does not exist.'})
 
-        # create order object with retailer and distributor
-        order = models.Order.objects.create(retailer=retailer,
-                                            distributor=distributor,
-                                            order_date=datetime.now(),
-                                            order_status='REQUESTED_APP')
+        # fetch retailer and distributor accounts
+        if isForManufacturer:
+            manufacturer_id = request.data['manufacturer_id']
+            distributor = models.Distributor.objects.filter(user_id=requester_id).first()
+            manufacturer = models.Manufacturer.objects.filter(user_id=manufacturer_id).first()
+            # create order object with retailer and distributor
+            order = models.Order.objects.create(distributor=distributor,
+                                                manufacturer=manufacturer,
+                                                order_date=datetime.now(),
+                                                order_status='REQUESTED_APP')
+        else:
+            distributor_id = request.data['distributor_id']
+            retailer = models.Retailer.objects.filter(user_id=requester_id).first()
+            distributor = models.Distributor.objects.filter(user_id=distributor_id).first()
+            order = models.Order.objects.create(distributor=distributor,
+                                                retailer=retailer,
+                                                order_date=datetime.now(),
+                                                order_status='REQUESTED_APP')
 
         # create order items for this order
         for item_id, qty in zip(products, quantity):
