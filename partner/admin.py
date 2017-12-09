@@ -8,10 +8,10 @@ from django.contrib.auth.models import Group
 class PartnerAdmin(admin.ModelAdmin):
     list_display=('company_name','mobile_number','address','GSTIN','PAN','ADHAAR')
 
-    def get_queryset(self, request):
-        if not request.user.is_superuser:
-            partner = models.Partner.objects.filter(user=request.user)
-        return models.Partner.objects.filter(id=partner)
+   # def get_queryset(self, request):
+      #  if not request.user.is_superuser:
+      #      partner = models.Partner.objects.filter(user=request.user)
+      #  return models.Partner.objects.filter(id=partner)
 
 class ConnectedPartnerAdmin(admin.ModelAdmin):
     list_display=('partner','connected_partner','credit_limit','remaining')
