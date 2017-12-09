@@ -17,7 +17,7 @@ class Partner(models.Model):
         ('add_partner', 'Add Partner'),
     )
 
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User,on_delete=models.CASCADE)
     mobile_number = PhoneNumberField()
     alternate_number = PhoneNumberField()
     company_name = models.CharField(max_length=255, blank=False)
@@ -28,19 +28,68 @@ class Partner(models.Model):
     ADHAAR = models.CharField(max_length=255, blank=True)
 
     type = models.CharField(max_length=255, choices=PARTNER_TYPE, blank=False)
-    buys_from = models.ManyToManyField('self')
-    sells_to = models.ManyToManyField('self')
+    # buys_from = models.ManyToManyField('self', blank=True)
+    # sells_to = models.ManyToManyField('self', blank=True)
 
     permissions = models.CharField(max_length=255, choices=PERMISSIONS, blank=True)
 
-    offered_products = models.ManyToManyField('Product')
+    # offered_products = models.ManyToManyField(BaseProduct, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.company_name)
+
+class ConnectedPartner(models.Model):
+    partner = models.ForeignKey(Partner,related_name='partner')
+    connected_partner = models.ForeignKey(Partner, related_name='connected_partner')
+    credit_limit = models.IntegerField()
+    remaining = models.IntegerField()
+
+    def __str__(self):
+        return "{}".format(self.connected_partner,self.partner)
+
+class Manufacturer(models.Model):
+    user = models.OneToOneField(User)
+    mobile_number = PhoneNumberField()
+    company_name = models.CharField(max_length=255, blank=False)
+    company_address = models.CharField(max_length=255)
+    pin_code = models.CharField(max_length=255)
+    GSTIN = models.CharField(max_length=255, blank=True)
+    PAN = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         return "{}".format(self.company_name)
 
 
+class Distributor(models.Model):
+    user = models.OneToOneField(User)
+    mobile_number = PhoneNumberField()
+    manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE, null=True)
+    company_name = models.CharField(max_length=255, blank=False)
+    company_address = models.CharField(max_length=255)
+    pin_code = models.CharField(max_length=255)
+    GSTIN = models.CharField(max_length=255, blank=True)
+    PAN = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.company_name)
+
+
+class Retailer(models.Model):
+    user = models.OneToOneField(User)
+    distributor = models.ForeignKey(Distributor, on_delete=models.CASCADE)
+    store_name = models.CharField(max_length=255, blank=False)
+    store_number = PhoneNumberField()
+    mobile_number = PhoneNumberField(blank=True)
+    store_address = models.CharField(max_length=255)
+    pin_code = models.CharField(max_length=255)
+    GSTIN = models.CharField(max_length=255, blank=True)
+    PAN = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.store_name, self.store_number)
+
 class BaseProduct(models.Model):
-    manufacturer = models.ForeignKey(Partner, null=True)
+    manufacturer = models.ForeignKey(Partner,on_delete=models.CASCADE)
     code = models.CharField(max_length=255, blank=True)
     name = models.CharField(max_length=255, blank=False)
     packing = models.CharField(max_length=255, blank=False)
@@ -60,19 +109,22 @@ class BaseProduct(models.Model):
 
 
 class Product(models.Model):
-    base = models.ForeignKey(BaseProduct)
+    partner = models.ForeignKey(Partner,on_delete=models.CASCADE)
+    product_partner=models.ForeignKey(Partner,related_name='product_partner')
+    base = models.ForeignKey(BaseProduct,on_delete=models.CASCADE)
     selling_price = models.FloatField()
     is_active = models.BooleanField()
 
+    def __str__(self):
+        return "{}".format(self.base,self.partner,self.product_partner)
+
 
 class Order(models.Model):
-    order_from = models.ForeignKey(Partner)
-    order_to = models.ForeignKey(Partner)
-
+    partner = models.ForeignKey(Partner,on_delete=models.CASCADE)
+    order_partner=models.ForeignKey(Partner,related_name='order_partner')
     order_status = models.CharField(max_length=255, blank=False)
     order_date = models.DateField(auto_created=True)
     delivery_date = models.DateField(blank=True)
-
     requested_delivery_time = models.DateField(blank=True)
     item_total = models.CharField(max_length=255, blank=True)
     s_gst_total = models.CharField(max_length=255, blank=True)
@@ -91,10 +143,10 @@ class Order(models.Model):
             self.number = str(self.id) if self.id else str(int(q.get()) + 1)
         else:
             self.number = 1
-        return "SEFRM" + str(self.order_from.user.id) + "TO" + str(self.order_to.user.id) + "-" + str(self.number)
+        return "SEFRM" + str(self.partner.id) + "TO" + str(self.order_partner.id) + "-" + str(self.number)
 
     def __str__(self):
-        return "{}".format(self.id)
+        return "{}".format(self.id,self.partner,self.order_partner)
 
     def save(self, *args, **kwargs):
         if not self.invoice_id:
@@ -120,14 +172,24 @@ class OrderItem(models.Model):
         return "{}".format(self.order_id, self.id, self.product_id)
 
 
-class ConnectedPartner(models.Model):
-    first_partner = models.ForeignKey(Partner)
-    second_partner = models.ForeignKey(Partner)
+class ConnectedRetailer(models.Model):
+    distributor = models.ForeignKey(Distributor, on_delete=models.CASCADE)
+    retailer = models.ForeignKey(Retailer, on_delete=models.CASCADE)
     credit_limit = models.IntegerField()
     remaining = models.IntegerField()
 
     def __str__(self):
-        return "{}".format(self.first_partner, self.second_partner)
+        return "{}".format(self.distributor, self.retailer)
+
+
+class ConnectedDistributor(models.Model):
+    distributor = models.ForeignKey(Distributor, on_delete=models.CASCADE)
+    manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE)
+    credit_limit = models.IntegerField()
+    remaining = models.IntegerField()
+
+    def __str__(self):
+        return "{}".format(self.distributor,self.manufacturer)
 
 
 class UserProfile(models.Model):
