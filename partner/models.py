@@ -13,8 +13,8 @@ class Partner(models.Model):
 
     PERMISSIONS = (
         ('sell_product', 'Sell Product'),
-        ('sell_add_product', 'Add & Sell Product'),
-        ('sell_add_product_partner', 'Add & Sell Product, Add Partner'),
+        ('add_product', 'Add Product'),
+        ('add_partner', 'Add Partner'),
     )
 
     user = models.OneToOneField(User)
@@ -32,6 +32,8 @@ class Partner(models.Model):
     sells_to = models.ManyToManyField('self')
 
     permissions = models.CharField(max_length=255, choices=PERMISSIONS, blank=True)
+
+    offered_products = models.ManyToManyField('Product')
 
     def __str__(self):
         return "{}".format(self.company_name)
