@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
     'momentous-dr-app.herokuapp.com',
     'saleseasy.herokuapp.com',
     '127.0.0.1',
+   'sales-easy-test.herokuapp.com' 
 ]
 
 # Application definition
