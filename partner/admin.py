@@ -62,7 +62,7 @@ class ProductAdmin(admin.ModelAdmin):
 class OrderAdmin(admin.ModelAdmin):
     models = Order
     pass
-    list_display = ('order_partner','order_date','invoice_id','order_status','delivery_date','requested_delivery_time','bill_total')
+    list_display = ('order_date','invoice_id','order_status','delivery_date','requested_delivery_time','bill_total')
     readonly_fields = (
         'invoice_id',
     )
