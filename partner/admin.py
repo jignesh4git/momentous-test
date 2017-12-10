@@ -8,7 +8,7 @@ from django.contrib.auth.models import Group
 class PartnerAdmin(admin.ModelAdmin):
     list_display=('company_name','mobile_number','address','GSTIN','PAN','ADHAAR')
 
-     def get_queryset(self, request):
+    def get_queryset(self, request):
          partner = models.Partner.objects.filter(user=request.user)   
          if not request.user.is_superuser:
         #    partner = models.Partner.objects.filter(user=request.user)
