@@ -47,7 +47,7 @@ class ProductAdmin(admin.ModelAdmin):
         if not request.user.is_superuser:
            # partner = models.Partner.objects.filter(user=request.user)
            return models.Product.objects.filter(partner=partner) | models.Product.objects.filter(product_partner=partner)
-        return models.Product.all()
+        return models.Product.objects.all()
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         partner = models.Partner.objects.filter(user=request.user)
         if not request.user.is_superuser:
