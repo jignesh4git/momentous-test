@@ -21,7 +21,7 @@ class ConnectedPartnerAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         partner = models.Partner.objects.filter(user=request.user)
-       # if not request.user.is_superuser:
+        if not request.user.is_superuser:
            # partner = models.Partner.objects.filter(user=request.user)
         return models.ConnectedPartner.objects.filter(partner=partner) | models.ConnectedPartner.objects.filter(connected_partner__in=partner)
         return models.ConnectedPartner.objects.all()
@@ -43,8 +43,9 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ('partner','product_partner','base','selling_price','is_active')
 
     def get_queryset(self, request):
+        partner = models.Partner.objects.filter(user=request.user)
         if not request.user.is_superuser:
-            partner = models.Partner.objects.filter(user=request.user)
+           # partner = models.Partner.objects.filter(user=request.user)
         return models.Product.objects.filter(partner=partner) | models.Product.objects.filter(product_partner=partner)
         return models.Product.all()
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -121,8 +122,9 @@ class OrderItemAdmin(admin.ModelAdmin):
     list_display = ('order_id', 'product', 'item_quantity')
 
     def get_queryset(self, request):
+        partner = models.Partner.objects.filter(user=request.user)
         if not request.user.is_superuser:
-            partner = models.Partner.objects.filter(user=request.user)
+         #   partner = models.Partner.objects.filter(user=request.user)
             order = models.Order.objects.filter(partner=partner)
             return models.OrderItem.objects.filter(order__in=order)
         return models.OrderItem.objects.all()
