@@ -21,7 +21,7 @@ class ConnectedPartnerAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         if not request.user.is_superuser:
             partner = models.Partner.objects.filter(user=request.user)
-        return models.ConnectedPartner.objects.filter(partner=partner) | models.ConnectedPartner.objects.filter(connected_partner__in=partner)
+            return models.ConnectedPartner.objects.filter(partner=partner) | models.ConnectedPartner.objects.filter(connected_partner__in=partner)
         return models.ConnectedPartner.objects.all()
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         partner = models.Partner.objects.filter(user=request.user)
