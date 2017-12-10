@@ -19,8 +19,9 @@ class ConnectedPartnerAdmin(admin.ModelAdmin):
     list_display=('partner','connected_partner','credit_limit','remaining')
 
     def get_queryset(self, request):
+        partner = models.Partner.objects.filter(user=request.user)
         if not request.user.is_superuser:
-            partner = models.Partner.objects.filter(user=request.user)
+           # partner = models.Partner.objects.filter(user=request.user)
             return models.ConnectedPartner.objects.filter(partner=partner) | models.ConnectedPartner.objects.filter(connected_partner__in=partner)
         return models.ConnectedPartner.objects.all()
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
