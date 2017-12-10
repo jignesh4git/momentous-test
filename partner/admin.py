@@ -12,7 +12,7 @@ class PartnerAdmin(admin.ModelAdmin):
          partner = models.Partner.objects.filter(user=request.user)   
          if not request.user.is_superuser:
         #    partner = models.Partner.objects.filter(user=request.user)
-         return models.Partner.objects.filter(id=partner)
+             return models.Partner.objects.filter(id=partner)
          return models.Partner.objects.all()
 
 
@@ -23,7 +23,7 @@ class ConnectedPartnerAdmin(admin.ModelAdmin):
         partner = models.Partner.objects.filter(user=request.user)
         if not request.user.is_superuser:
            # partner = models.Partner.objects.filter(user=request.user)
-        return models.ConnectedPartner.objects.filter(partner=partner) | models.ConnectedPartner.objects.filter(connected_partner__in=partner)
+             return models.ConnectedPartner.objects.filter(partner=partner) | models.ConnectedPartner.objects.filter(connected_partner__in=partner)
         return models.ConnectedPartner.objects.all()
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         partner = models.Partner.objects.filter(user=request.user)
@@ -46,7 +46,7 @@ class ProductAdmin(admin.ModelAdmin):
         partner = models.Partner.objects.filter(user=request.user)
         if not request.user.is_superuser:
            # partner = models.Partner.objects.filter(user=request.user)
-        return models.Product.objects.filter(partner=partner) | models.Product.objects.filter(product_partner=partner)
+           return models.Product.objects.filter(partner=partner) | models.Product.objects.filter(product_partner=partner)
         return models.Product.all()
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         partner = models.Partner.objects.filter(user=request.user)
@@ -82,7 +82,7 @@ class OrderAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         if not request.user.is_superuser:
             partner = models.Partner.objects.filter(user=request.user)
-        return models.Order.objects.filter(partner=partner)
+            return models.Order.objects.filter(partner=partner)
         return models.Order.objects.all()
 
     # def make_id(self):
