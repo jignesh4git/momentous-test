@@ -110,7 +110,7 @@ class BaseProduct(models.Model):
 
 class Product(models.Model):
     partner = models.ForeignKey(Partner,on_delete=models.CASCADE)
-    product_partner=models.ForeignKey(Partner,related_name='product_partner')
+    connected_partner=models.ForeignKey(Partner,related_name='product_partner')
     base = models.ForeignKey(BaseProduct,on_delete=models.CASCADE)
     selling_price = models.FloatField()
     is_active = models.BooleanField()
@@ -121,7 +121,7 @@ class Product(models.Model):
 
 class Order(models.Model):
     partner = models.ForeignKey(Partner,on_delete=models.CASCADE)
-    order_partner=models.ForeignKey(Partner,related_name='order_partner')
+    connected_partner=models.ForeignKey(Partner,related_name='order_partner')
     order_status = models.CharField(max_length=255, blank=False)
     order_date = models.DateField(auto_created=True)
     delivery_date = models.DateField(blank=True)
