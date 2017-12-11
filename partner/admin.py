@@ -9,8 +9,9 @@ class PartnerAdmin(admin.ModelAdmin):
     list_display=('company_name','mobile_number','address','GSTIN','PAN','ADHAAR')
 
     def get_queryset(self, request):
-         partner = models.Partner.objects.filter(user=request.user)   
-         if not request.user.is_superuser:
+         partner = models.Partner.objects.filter(user=request.user)
+         partner_type = models.Partner.objects.filter(user=request.user).values('type')
+         if not request.user.is_superuser and partner_type == "manufacturer":
         #    partner = models.Partner.objects.filter(user=request.user)
              return models.Partner.objects.filter(id=partner)
          return models.Partner.objects.all()
@@ -30,10 +31,10 @@ class ConnectedPartnerAdmin(admin.ModelAdmin):
         if not request.user.is_superuser:
             if db_field.name == 'partner':
                     kwargs['queryset'] = partner
-            if db_field.name == 'connected_partner':
-                    partner_id = models.ConnectedPartner.objects.filter(connected_partner=partner).values('partner')
-                    connected_partner_id = models.ConnectedPartner.objects.filter(partner=partner).values('connected_partner')
-                    kwargs['queryset'] = models.Partner.objects.filter(id__in=partner_id) | models.Partner.objects.filter(id__in=connected_partner_id) & models.Partner.objects.exclude(id=partner)
+            # if db_field.name == 'connected_partner':
+            #         partner_id = models.ConnectedPartner.objects.filter(connected_partner=partner).values('partner')
+            #         connected_partner_id = models.ConnectedPartner.objects.filter(partner=partner).values('connected_partner')
+            #         kwargs['queryset'] = models.Partner.objects.filter(id__in=partner_id) | models.Partner.objects.filter(id__in=connected_partner_id) & models.Partner.objects.exclude(id=partner)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class BaseProductAdmin(admin.ModelAdmin):
@@ -53,7 +54,7 @@ class ProductAdmin(admin.ModelAdmin):
         if not request.user.is_superuser:
             if db_field.name == 'partner':
                     kwargs['queryset'] = partner
-            if db_field.name == 'product_partner':
+            if db_field.name == 'connected_partner':
                 partner_id = models.ConnectedPartner.objects.filter(connected_partner=partner).values('partner')
                 connected_partner_id = models.ConnectedPartner.objects.filter(partner=partner).values('connected_partner')
                 kwargs['queryset'] = models.Partner.objects.filter(id__in=partner_id) | models.Partner.objects.filter(id__in=connected_partner_id) & models.Partner.objects.exclude(id=partner)
@@ -108,7 +109,7 @@ class OrderAdmin(admin.ModelAdmin):
         if not request.user.is_superuser:
             if db_field.name == 'partner':
                 kwargs['queryset'] = partner
-            if db_field.name == 'order_partner':
+            if db_field.name == 'connected_partner':
                 partner_id = models.ConnectedPartner.objects.filter(connected_partner=partner).values('partner')
                 connected_partner_id = models.ConnectedPartner.objects.filter(partner=partner).values(
                 'connected_partner')
