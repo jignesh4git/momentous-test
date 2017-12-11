@@ -116,7 +116,7 @@ class Product(models.Model):
     is_active = models.BooleanField()
 
     def __str__(self):
-        return "{}".format(self.base,self.partner,self.product_partner)
+        return "{}".format(self.base,self.partner,self.connected_partner)
 
 
 class Order(models.Model):
@@ -146,7 +146,7 @@ class Order(models.Model):
         return "SEFRM" + str(self.partner.id) + "TO" + str(self.order_partner.id) + "-" + str(self.number)
 
     def __str__(self):
-        return "{}".format(self.id,self.partner,self.order_partner)
+        return "{}".format(self.id,self.partner,self.connected_partner)
 
     def save(self, *args, **kwargs):
         if not self.invoice_id:
