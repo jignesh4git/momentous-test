@@ -105,7 +105,7 @@ class BaseProduct(models.Model):
     category = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
-        return "{}".format(self.name, self.manufacturer, self.packing)
+        return '%s (%s)(%s)' % (self.name, self.manufacturer, self.packing)
 
 
 class Product(models.Model):
@@ -115,8 +115,10 @@ class Product(models.Model):
     selling_price = models.FloatField()
     is_active = models.BooleanField()
 
+    def __unicode__(self):
+        return "{}".format(self.base, self.partner, self.connected_partner)
     def __str__(self):
-        return "{}".format(self.base,self.partner,self.connected_partner)
+        return '%s (%s)(%s)' % (self.base, self.partner, self.connected_partner)
 
 
 class Order(models.Model):
