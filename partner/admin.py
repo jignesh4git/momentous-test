@@ -34,7 +34,7 @@ class ConnectedPartnerAdmin(admin.ModelAdmin):
             if db_field.name == 'connected_partner':
                     partner_id = models.ConnectedPartner.objects.filter(connected_partner=partner).values('partner')
                     connected_partner_id = models.ConnectedPartner.objects.filter(partner=partner).values('connected_partner')
-                    kwargs['queryset'] = models.Partner.objects.exclude(id__in=partner_id) | models.Partner.objects.exclude(id__in=connected_partner_id) & models.Partner.objects.exclude(id=partner)
+                    kwargs['queryset'] = models.Partner.objects.exclude(id__in=partner_id) & models.Partner.objects.exclude(id__in=connected_partner_id) & models.Partner.objects.exclude(id=partner)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class BaseProductAdmin(admin.ModelAdmin):
