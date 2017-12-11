@@ -143,7 +143,7 @@ class Order(models.Model):
             self.number = str(self.id) if self.id else str(int(q.get()) + 1)
         else:
             self.number = 1
-        return "SEFRM" + str(self.partner.id) + "TO" + str(self.order_partner.id) + "-" + str(self.number)
+        return "SEFRM" + str(self.partner.id) + "TO" + str(self.connected_partner.id) + "-" + str(self.number)
 
     def __str__(self):
         return "{}".format(self.id,self.partner,self.connected_partner)
