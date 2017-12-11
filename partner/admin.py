@@ -26,6 +26,7 @@ class ConnectedPartnerAdmin(admin.ModelAdmin):
            # partner = models.Partner.objects.filter(user=request.user)
              return models.ConnectedPartner.objects.filter(partner=partner) | models.ConnectedPartner.objects.filter(connected_partner__in=partner)
         return models.ConnectedPartner.objects.all()
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         partner = models.Partner.objects.filter(user=request.user)
         if not request.user.is_superuser:
@@ -136,7 +137,7 @@ class OrderItemAdmin(admin.ModelAdmin):
                 if db_field.name == 'order':
                     kwargs['queryset'] = models.Order.objects.filter(partner=partner)
                 if db_field.name == 'product':
-                    kwargs["queryset"] = models.Product.objects.filter(partner__in=partner) | models.Product.objects.filter(product_partner__in=partner)
+                    kwargs["queryset"] = models.Product.objects.filter(partner__in=partner) | models.Product.objects.filter(connected_partner__in=partner)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 admin.site.register(models.Partner,PartnerAdmin)
