@@ -18,16 +18,16 @@ class ConnectedPartnerViewSet(ModelViewSet):
 
 class ProductViewSet(ModelViewSet):
     model = models.Product
-    list_display = ('partner', 'product_partner', 'base', 'selling_price', 'is_active')
+    list_display = ('partner', 'connected_partner', 'base', 'selling_price', 'is_active')
 
     def get_queryset(self, request):
         partner = models.Partner.objects.filter(user=request.user)
-        return models.Product.objects.filter(partner=partner) | models.Product.objects.filter(product_partner=partner)
+        return models.Product.objects.filter(partner=partner) | models.Product.objects.filter(connected_partner=partner)
 
 class OrderViewSet(ModelViewSet):
     model = models.Order
     list_display = (
-    'order_partner', 'order_date', 'invoice_id', 'order_status', 'delivery_date', 'requested_delivery_time',
+    'connected_partner', 'order_date', 'invoice_id', 'order_status', 'delivery_date', 'requested_delivery_time',
     'bill_total')
 
     def get_queryset(self, request):
@@ -46,7 +46,7 @@ class OrderInvoiceView(TemplateView, ListModelView):
     def get(self, request, **kwargs):
         context = super(OrderInvoiceView, self).get_context_data(**kwargs)
         partner = models.Partner.objects.filter(user=request.user)
-        order = models.Order.objects.filter(partner=partner) | models.Order.objects.filter(order_partner=partner)
+        order = models.Order.objects.filter(partner=partner) | models.Order.objects.filter(connected_partner=partner)
         context['orders'] = order
         return render(
             request,
