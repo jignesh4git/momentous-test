@@ -44,12 +44,12 @@ class BaseProductAdmin(admin.ModelAdmin):
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('partner','connected_partner','base','selling_price','is_active')
 
-    # def get_queryset(self, request):
-    #     partner = models.Partner.objects.filter(user=request.user)
-    #     if not request.user.is_superuser:
-    #        # partner = models.Partner.objects.filter(user=request.user)
-    #        return models.Product.objects.filter(partner=partner)
-    #     return models.Product.objects.all()
+    def get_queryset(self, request):
+        # partner = models.Partner.objects.filter(user=request.user)
+        if not request.user.is_superuser:
+            partner = models.Partner.objects.filter(user=request.user)
+            return models.Product.objects.filter(partner=partner) | models.Product.objects.filter(connected_partner=partner)
+        return models.Product.objects.all()
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         partner = models.Partner.objects.filter(user=request.user)
         if not request.user.is_superuser:
