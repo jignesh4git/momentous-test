@@ -31,8 +31,10 @@ class OrderViewSet(ModelViewSet):
     'bill_total')
 
     def get_queryset(self, request):
-        partner = models.Partner.objects.filter(user=request.user)
-        return models.Order.objects.filter(partner=partner)
+        if not request.user.is_superuser:
+            partner = models.Partner.objects.filter(user=request.user)
+            return models.Order.objects.filter(partner=partner)  | models.Order.objects.filter(connected_partner=partner)
+        return models.Order.objects.all()
 
     def get_detail_view(request):
         return OrderDetailView.as_view()
@@ -66,9 +68,9 @@ class OrderDetailView(TemplateView, ListModelView):
 
         # get all context for invoice:
         context['order'] = models.Order.objects.filter(id=order_id)
-        context['manufacturer'] = models.Partner.objects.filter(Q(id=partner_id) | Q(type='manufacturer'))
+        context['manufacturer'] = models.Partner.objects.filter(Q(id=partner_id) & Q(type='manufacturer'))
         context['distributor'] = models.Partner.objects.filter(Q(id=partner_id) & Q(type='distributor'))
-        context['retailer'] = models.Partner.objects.filter(id=partner_id) | models.Partner.objects.filter(type='retailer')
+        context['retailer'] = models.Partner.objects.filter(Q(id=partner_id) & Q(type='retailer'))
         context['orderitems'] = models.OrderItem.objects.filter(order_id=order_id)
         orderproducts = models.Product.objects.in_bulk(context['orderitems'])
         context['orderproducts'] = [orderproducts[orderproduct] for orderproduct in orderproducts]

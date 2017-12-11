@@ -84,7 +84,7 @@ class OrderAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         if not request.user.is_superuser:
             partner = models.Partner.objects.filter(user=request.user)
-            return models.Order.objects.filter(partner=partner)
+            return models.Order.objects.filter(partner=partner)  | models.Order.objects.filter(connected_partner=partner)
         return models.Order.objects.all()
 
     # def make_id(self):
