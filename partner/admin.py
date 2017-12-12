@@ -6,22 +6,44 @@ from django.contrib.auth.models import Group
 
 # Register your models here.
 class PartnerAdmin(admin.ModelAdmin):
-    list_display=('company_name','mobile_number','address','GSTIN','PAN','ADHAAR')
+    list_display=('company_name','type','mobile_number','address','GSTIN','PAN','ADHAAR')
 
     def get_queryset(self, request):
          partner = models.Partner.objects.filter(user=request.user)
+         emp = models.Employee.objects.filter(user=request.user).values('partner')
+         if emp:
+             partner = emp
          partner_type = models.Partner.objects.filter(user=request.user).values('type')
-         if not request.user.is_superuser and partner_type == "manufacturer":
-        #    partner = models.Partner.objects.filter(user=request.user)
-             return models.Partner.objects.filter(id=partner)
+         if not request.user.is_superuser and partner_type != "manufacturer":
+             return models.Partner.objects.filter(id__in=partner)
          return models.Partner.objects.all()
 
+class EmployeeAdmin(admin.ModelAdmin):
+    list_display=('partner','user','first_name','last_name','mobile_no','permissions')
+
+    def get_queryset(self, request):
+        if not request.user.is_superuser:
+            partner = models.Partner.objects.filter(user=request.user)
+            return models.Employee.objects.filter(partner=partner)
+        return  models.Employee.objects.all()
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        partner = models.Partner.objects.filter(user=request.user)
+        if not request.user.is_superuser:
+            if db_field.name == 'partner':
+                    partner_id = models.ConnectedPartner.objects.filter(connected_partner=partner).values('partner')
+                    connected_partner_id = models.ConnectedPartner.objects.filter(partner=partner).values('connected_partner')
+                    kwargs['queryset'] = models.Partner.objects.filter(id__in=partner_id) | models.Partner.objects.filter(id__in=connected_partner_id) | models.Partner.objects.filter(id=partner)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class ConnectedPartnerAdmin(admin.ModelAdmin):
     list_display=('partner','connected_partner','credit_limit','remaining')
 
     def get_queryset(self, request):
         partner = models.Partner.objects.filter(user=request.user)
+        emp = models.Employee.objects.filter(user=request.user).values('partner')
+        if emp:
+            partner = emp
         if not request.user.is_superuser:
            # partner = models.Partner.objects.filter(user=request.user)
              return models.ConnectedPartner.objects.filter(partner=partner) | models.ConnectedPartner.objects.filter(connected_partner__in=partner)
@@ -29,9 +51,12 @@ class ConnectedPartnerAdmin(admin.ModelAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         partner = models.Partner.objects.filter(user=request.user)
+        emp = models.Employee.objects.filter(user=request.user).values('partner')
+        if emp:
+            partner = emp
         if not request.user.is_superuser:
             if db_field.name == 'partner':
-                    kwargs['queryset'] = partner
+                    kwargs['queryset'] = models.Partner.objects.filter(id__in=partner)
             if db_field.name == 'connected_partner':
                     partner_id = models.ConnectedPartner.objects.filter(connected_partner=partner).values('partner')
                     connected_partner_id = models.ConnectedPartner.objects.filter(partner=partner).values('connected_partner')
@@ -45,16 +70,21 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ('partner','connected_partner','base','selling_price','is_active')
 
     def get_queryset(self, request):
-        # partner = models.Partner.objects.filter(user=request.user)
+        emp = models.Employee.objects.filter(user=request.user).values('partner')
         if not request.user.is_superuser:
             partner = models.Partner.objects.filter(user=request.user)
+            if emp:
+                partner = emp
             return models.Product.objects.filter(partner=partner) | models.Product.objects.filter(connected_partner=partner)
         return models.Product.objects.all()
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         partner = models.Partner.objects.filter(user=request.user)
+        emp = models.Employee.objects.filter(user=request.user).values('partner')
+        if emp:
+            partner = emp
         if not request.user.is_superuser:
             if db_field.name == 'partner':
-                    kwargs['queryset'] = partner
+                    kwargs['queryset'] = models.Partner.objects.filter(id__in=partner)
             if db_field.name == 'connected_partner':
                 partner_id = models.ConnectedPartner.objects.filter(connected_partner=partner).values('partner')
                 connected_partner_id = models.ConnectedPartner.objects.filter(partner=partner).values('connected_partner')
@@ -82,8 +112,11 @@ class OrderAdmin(admin.ModelAdmin):
     #     return super(OrderAdmin, self).get_form(request, obj, **kwargs)
     #
     def get_queryset(self, request):
+        emp = models.Employee.objects.filter(user=request.user).values('partner')
         if not request.user.is_superuser:
             partner = models.Partner.objects.filter(user=request.user)
+            if emp:
+                partner = emp
             return models.Order.objects.filter(partner=partner)  | models.Order.objects.filter(connected_partner=partner)
         return models.Order.objects.all()
 
@@ -106,10 +139,13 @@ class OrderAdmin(admin.ModelAdmin):
     #     super(Order, self).save(*args, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        emp = models.Employee.objects.filter(user=request.user).values('partner')
         partner = models.Partner.objects.filter(user=request.user)
+        if emp:
+            partner = emp
         if not request.user.is_superuser:
             if db_field.name == 'partner':
-                kwargs['queryset'] = partner
+                kwargs['queryset'] = models.Partner.objects.filter(id__in=partner)
             if db_field.name == 'connected_partner':
                 partner_id = models.ConnectedPartner.objects.filter(connected_partner=partner).values('partner')
                 connected_partner_id = models.ConnectedPartner.objects.filter(partner=partner).values(
@@ -124,15 +160,20 @@ class OrderItemAdmin(admin.ModelAdmin):
     list_display = ('order_id', 'product', 'item_quantity')
 
     def get_queryset(self, request):
-        partner = models.Partner.objects.filter(user=request.user)
+        emp = models.Employee.objects.filter(user=request.user).values('partner')
         if not request.user.is_superuser:
-         #   partner = models.Partner.objects.filter(user=request.user)
+            partner = models.Partner.objects.filter(user=request.user)
+            if emp:
+                partner = emp
             order = models.Order.objects.filter(partner=partner)
             return models.OrderItem.objects.filter(order__in=order)
         return models.OrderItem.objects.all()
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         partner = models.Partner.objects.filter(user=request.user)
+        emp = models.Employee.objects.filter(user=request.user).values('partner')
+        if emp:
+            partner = emp
         if not request.user.is_superuser:
                 if db_field.name == 'order':
                     kwargs['queryset'] = models.Order.objects.filter(partner=partner)
@@ -146,3 +187,4 @@ admin.site.register(models.BaseProduct,BaseProductAdmin)
 admin.site.register(models.Product,ProductAdmin)
 admin.site.register(models.Order, OrderAdmin)
 admin.site.register(models.OrderItem, OrderItemAdmin)
+admin.site.register(models.Employee,EmployeeAdmin)

@@ -88,8 +88,8 @@
 									<table class="table">
 										<thead>
 											<tr>
-												<th style="width:60px" class="text-center">ID</th>
-												<th class="text-left">DESCRIPTION</th>
+												<th></th>
+												<th class="text-left">PRODUCT DESCRIPTION</th>
 												<th class="text-left">Quantity</th>
 												<th style="width:90px" class="text-right">TOTAL</th>
 											</tr>
@@ -111,7 +111,7 @@
 
 										{% for orderitem in orderitems %}
 											<tr>
-												<td class="text-center">{{ orderitem.product_code }}
+												<td></td>
 												<td>{{ orderitem.product }}</td>
 												<td>{{ orderitem.item_quantity }}</td>
 												<td class="text-right"> {{ orderitem.total }}<i class="fa fa-inr"></i></td>

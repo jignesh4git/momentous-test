@@ -1,6 +1,8 @@
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
+from django.db.models import When, Q, F
+from django.contrib.auth.models import Group
 
 
 class Partner(models.Model):
@@ -8,7 +10,6 @@ class Partner(models.Model):
         ('manufacturer', 'Manufacturer'),
         ('distributor', 'Distributor'),
         ('retailer', 'Retailer'),
-        ('employee', 'Employee'),
     )
 
     PERMISSIONS = (
@@ -193,6 +194,38 @@ class ConnectedDistributor(models.Model):
     def __str__(self):
         return "{}".format(self.distributor,self.manufacturer)
 
+class Employee(models.Model):
+    PERMISSIONS = (
+        ('sell_product', 'Sell Product'),
+        ('add_product', 'Add Product'),
+        ('add_partner', 'Add Partner'),
+    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    mobile_no = PhoneNumberField(blank=True)
+    partner = models.ForeignKey(Partner, on_delete=models.CASCADE)
+    permissions = models.CharField(max_length=255, choices=PERMISSIONS, blank=True)
+
+    def __str__(self):
+        return "%s %s" % (self.first_name,self.last_name)
+
+    def save(self, *args, **kwargs):
+        u = User.objects.get(username=self.user)
+        u.groups.clear()
+        u.save()
+        u.is_staff = True
+        u.save()
+        if self.permissions == 'add_product':
+            group = Group.objects.get(name='product')
+            group.user_set.add(u)
+        if self.permissions == 'add_partner':
+            group = Group.objects.get(name='partner')
+            group.user_set.add(u)
+        if self.permissions == 'sell_product':
+            group = Group.objects.get(name='order')
+            group.user_set.add(u)
+        super(Employee, self).save(*args, **kwargs)
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
