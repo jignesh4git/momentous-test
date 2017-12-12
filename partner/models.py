@@ -104,7 +104,8 @@ class BaseProduct(models.Model):
     s_gst = models.IntegerField(choices=GST_CHOICES, default=0)
     c_gst = models.IntegerField(choices=GST_CHOICES, default=0)
     category = models.CharField(max_length=255, blank=True)
-
+    class Meta:
+        verbose_name_plural = "Product Master"
     def __str__(self):
         return '%s %s (%s)' % (self.code,self.name,self.manufacturer)
 
