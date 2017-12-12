@@ -10,17 +10,3 @@ class Migration(migrations.Migration):
     dependencies = [
         ('partner', '0002_auto_20171212_2029'),
     ]
-
-    operations = [
-        migrations.RemoveField(
-            model_name='employee',
-            name='partner',
-        ),
-        migrations.RemoveField(
-            model_name='employee',
-            name='user',
-        ),
-        migrations.DeleteModel(
-            name='Employee',
-        ),
-    ]
