@@ -13,7 +13,15 @@ from django.views.generic import TemplateView,ListView
 class ConnectedPartnerViewSet(ModelViewSet):
     model = models.ConnectedPartner
     list_display = ('partner', 'connected_partner', 'credit_limit', 'remaining')
-
+    def get_queryset(self, request):
+        partner = models.Partner.objects.filter(user=request.user)
+        emp = models.Employee.objects.filter(user=request.user).values('partner')
+        if emp:
+            partner = emp
+        if not request.user.is_superuser:
+           # partner = models.Partner.objects.filter(user=request.user)
+             return models.ConnectedPartner.objects.filter(partner=partner) | models.ConnectedPartner.objects.filter(connected_partner__in=partner)
+        return models.ConnectedPartner.objects.all()
 
 class ProductViewSet(ModelViewSet):
     model = models.Product
