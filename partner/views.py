@@ -9,7 +9,6 @@ from . import models
 from django.db.models import When, Q, F
 from django.views import generic
 from django.views.generic import TemplateView,ListView
-from .forms import ConnectedPartnerForm
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 class ConnectedPartnerViewSet(ModelViewSet):
