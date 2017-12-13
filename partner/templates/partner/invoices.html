@@ -23,7 +23,7 @@
                 {% for order in orders %}
                 <tr class="odd" role="row">
                     <td>{{ order.retailer }}</td>
-                    <td><a href="/partner/orderitem/{{order.id}}/detail"> {{ order.invoice_id }}</a></td>
+                    <td><a href="{% url 'partner:invoicedetail' order.id %}"> {{ order.invoice_id }}</a></td>
                     <td>{{ order.order_date }}</a></td>
                     <td>{{ order.order_status }}</td>
                     <td></td>

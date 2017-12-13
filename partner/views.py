@@ -5,11 +5,10 @@ from material.frontend.views import ModelViewSet, ListModelView
 from django.views.generic.detail import SingleObjectMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-
 from . import models
 from django.db.models import When, Q, F
 from django.views import generic
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView,ListView
 
 class ConnectedPartnerViewSet(ModelViewSet):
     model = models.ConnectedPartner
@@ -37,12 +36,10 @@ class OrderViewSet(ModelViewSet):
         return models.Order.objects.all()
 
     def get_detail_view(request):
-        return OrderDetailView.as_view()
-
+        return OrderItemView.as_view()
 
 class OrderInvoiceView(TemplateView, ListModelView):
-    model = models.OrderItem
-    list_display = ('order', 'product', 'item_quantity')
+    model = models.Order
     template_name = 'partner/invoices.html'
 
     def get(self, request, **kwargs):
@@ -56,13 +53,12 @@ class OrderInvoiceView(TemplateView, ListModelView):
             context,
         )
 
-
-class OrderDetailView(TemplateView, ListModelView):
+class InvoiceDetailView(TemplateView, ListModelView):
     model = models.Order
-    template_name = 'partner/order_detail.html'
+    template_name = 'partner/invoice_detail.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(OrderDetailView, self).get_context_data(**kwargs)
+    def get(self,request, **kwargs):
+        context = super(InvoiceDetailView, self).get_context_data(**kwargs)
         order_id = self.kwargs['pk']
         partner_id = models.Order.objects.filter(id=order_id).values('partner')
 
@@ -74,13 +70,15 @@ class OrderDetailView(TemplateView, ListModelView):
         context['orderitems'] = models.OrderItem.objects.filter(order_id=order_id)
         orderproducts = models.Product.objects.in_bulk(context['orderitems'])
         context['orderproducts'] = [orderproducts[orderproduct] for orderproduct in orderproducts]
-
-        return context
-
+        return render(
+            request,
+            'partner/invoice_detail.html',
+            context,
+        )
 
 class OrderItemViewSet(ModelViewSet):
     model = models.OrderItem
-
+    list_display = ('order_id', 'product', 'item_quantity')
     def get_queryset(self, request):
         if not request.user.is_superuser:
             partner = models.Partner.objects.filter(user=request.user)
@@ -88,13 +86,10 @@ class OrderItemViewSet(ModelViewSet):
             return models.OrderItem.objects.filter(order__in=order)
         return models.OrderItem.objects.all()
 
-    def get_detail_view(request):
-        return OrderItemView.as_view()
-
 
 class OrderItemView(ListModelView):
     model = models.OrderItem
-    list_display = ('order', 'product', 'item_quantity')
+    list_display = ('order_id', 'product', 'item_quantity')
 
     def get_queryset(self):
         order_id = self.kwargs['pk']
