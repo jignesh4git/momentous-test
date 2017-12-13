@@ -6,6 +6,7 @@ from django.contrib.auth.models import Group
 
 # Register your models here.
 class PartnerAdmin(admin.ModelAdmin):
+    icon = '<i class="material-icons">accessibility</i>'
     list_display=('company_name','type','mobile_number','address','GSTIN','PAN','ADHAAR')
 
     def get_queryset(self, request):
@@ -19,6 +20,7 @@ class PartnerAdmin(admin.ModelAdmin):
          return models.Partner.objects.all()
 
 class EmployeeAdmin(admin.ModelAdmin):
+    icon = '<i class="material-icons">face</i>'
     list_display=('partner','user','first_name','last_name','mobile_no','permissions')
 
     def get_queryset(self, request):
@@ -37,6 +39,7 @@ class EmployeeAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class ConnectedPartnerAdmin(admin.ModelAdmin):
+    icon = '<i class="material-icons">group</i>'
     list_display=('partner','connected_partner','credit_limit','remaining')
 
     def get_queryset(self, request):
@@ -64,9 +67,11 @@ class ConnectedPartnerAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class BaseProductAdmin(admin.ModelAdmin):
+    icon = '<i class="material-icons">add_circle</i>'
     list_display=('manufacturer','code','name','packing','category')
 
 class ProductAdmin(admin.ModelAdmin):
+    icon = '<i class="material-icons">add</i>'
     list_display = ('partner','connected_partner','base','selling_price','is_active')
 
     def get_queryset(self, request):
@@ -92,6 +97,7 @@ class ProductAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class OrderAdmin(admin.ModelAdmin):
+    icon = '<i class="material-icons">add_circle</i>'
     models = Order
     pass
     list_display = ('order_date','invoice_id','order_status','delivery_date','requested_delivery_time','bill_total')
@@ -156,6 +162,7 @@ class OrderAdmin(admin.ModelAdmin):
 
 
 class OrderItemAdmin(admin.ModelAdmin):
+    icon = '<i class="material-icons">add</i>'
     pass
     list_display = ('order_id', 'product', 'item_quantity')
 
