@@ -8,21 +8,24 @@ from django.contrib.auth.decorators import login_required
 from . import models
 from django.db.models import When, Q, F
 from django.views import generic
-from django.views.generic import TemplateView,ListView
+from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+
 
 class ConnectedPartnerViewSet(ModelViewSet):
     model = models.ConnectedPartner
     list_display = ('partner', 'connected_partner', 'credit_limit', 'remaining')
+
     def get_queryset(self, request):
         partner = models.Partner.objects.filter(user=request.user)
         emp = models.Employee.objects.filter(user=request.user).values('partner')
         if emp:
             partner = emp
         if not request.user.is_superuser:
-           # partner = models.Partner.objects.filter(user=request.user)
-             return models.ConnectedPartner.objects.filter(partner=partner) | models.ConnectedPartner.objects.filter(connected_partner__in=partner)
+            # partner = models.Partner.objects.filter(user=request.user)
+            return models.ConnectedPartner.objects.filter(Q(partner=partner) | Q(connected_partner__in=partner))
         return models.ConnectedPartner.objects.all()
+
 
 class ProductViewSet(ModelViewSet):
     model = models.Product
@@ -32,20 +35,22 @@ class ProductViewSet(ModelViewSet):
         partner = models.Partner.objects.filter(user=request.user)
         return models.Product.objects.filter(partner=partner) | models.Product.objects.filter(connected_partner=partner)
 
+
 class OrderViewSet(ModelViewSet):
     model = models.Order
     list_display = (
-    'connected_partner', 'order_date', 'invoice_id', 'order_status', 'delivery_date', 'requested_delivery_time',
-    'bill_total')
+        'connected_partner', 'order_date', 'invoice_id', 'order_status', 'delivery_date', 'requested_delivery_time',
+        'bill_total')
 
     def get_queryset(self, request):
         if not request.user.is_superuser:
             partner = models.Partner.objects.filter(user=request.user)
-            return models.Order.objects.filter(partner=partner)  | models.Order.objects.filter(connected_partner=partner)
+            return models.Order.objects.filter(partner=partner) | models.Order.objects.filter(connected_partner=partner)
         return models.Order.objects.all()
 
     def get_detail_view(request):
         return OrderItemView.as_view()
+
 
 class OrderInvoiceView(TemplateView, ListModelView):
     model = models.Order
@@ -62,11 +67,12 @@ class OrderInvoiceView(TemplateView, ListModelView):
             context,
         )
 
+
 class InvoiceDetailView(TemplateView, ListModelView):
     model = models.Order
     template_name = 'partner/invoice_detail.html'
 
-    def get(self,request, **kwargs):
+    def get(self, request, **kwargs):
         context = super(InvoiceDetailView, self).get_context_data(**kwargs)
         order_id = self.kwargs['pk']
         partner_id = models.Order.objects.filter(id=order_id).values('partner')
@@ -85,9 +91,11 @@ class InvoiceDetailView(TemplateView, ListModelView):
             context,
         )
 
+
 class OrderItemViewSet(ModelViewSet):
     model = models.OrderItem
     list_display = ('order_id', 'product', 'item_quantity')
+
     def get_queryset(self, request):
         if not request.user.is_superuser:
             partner = models.Partner.objects.filter(user=request.user)
