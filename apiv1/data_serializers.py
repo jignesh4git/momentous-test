@@ -41,7 +41,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Product
-        fields = ('selling_price', 'is_active', 'base')
+        fields = ('id', 'selling_price', 'is_active', 'base')
 
 
 class PartnerAccountSerializer(serializers.Serializer):

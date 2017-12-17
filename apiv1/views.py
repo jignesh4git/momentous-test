@@ -63,7 +63,7 @@ class MyProductsView(APIView):
         if type(user).__name__ == 'AnonymousUser':
             return Response(status=400, exception=True,
                             data={'error': 'Auth token is missing.'})
-        
+
         products = models.Product.objects.filter(connected_partner__user=user)
         products_data = data_serializers.ProductSerializer(products, many=True).data
         return Response({'status': '200', 'data': products_data})
@@ -77,10 +77,6 @@ class PlaceOrder(APIView):
 
     def post(self, request, *args, **kwargs):
         # parse data from POST request
-        isForManufacturer = False
-
-        if request.data['manufacturer_id'] is not None:
-            isForManufacturer = True
 
         requester_id = request.user.id
         products = request.data['products']
@@ -93,22 +89,13 @@ class PlaceOrder(APIView):
                 return Response(status=400, exception=True,
                                 data={'error': 'requested product with id ' + str(item_id) + ' does not exist.'})
 
-        # fetch retailer and distributor accounts
-        if isForManufacturer:
-            manufacturer_id = request.data['manufacturer_id']
-            distributor = models.Distributor.objects.filter(user_id=requester_id).first()
-            manufacturer = models.Manufacturer.objects.filter(user_id=manufacturer_id).first()
-            # create order object with retailer and distributor
-            order = models.Order.objects.create(distributor=distributor,
-                                                manufacturer=manufacturer,
-                                                order_date=datetime.now(),
-                                                order_status='REQUESTED_APP')
-        else:
-            distributor_id = request.data['distributor_id']
-            retailer = models.Retailer.objects.filter(user_id=requester_id).first()
-            distributor = models.Distributor.objects.filter(user_id=distributor_id).first()
-            order = models.Order.objects.create(distributor=distributor,
-                                                retailer=retailer,
+            placed_to_user_id = request.data['place_order_to']
+
+            placed_to = models.Partner.objects.filter(user_id=placed_to_user_id).first()
+            placed_by = models.Partner.objects.filter(user_id=requester_id).first()
+
+            order = models.Order.objects.create(partner=placed_by,
+                                                connected_partner=placed_to,
                                                 order_date=datetime.now(),
                                                 order_status='REQUESTED_APP')
 
