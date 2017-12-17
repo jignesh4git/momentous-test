@@ -135,13 +135,13 @@ class Order(models.Model):
     order_date = models.DateField(auto_created=True)
     delivery_date = models.DateField(blank=True, null=True)
     requested_delivery_time = models.DateField(blank=True, null=True)
-    item_total = models.CharField(max_length=255, blank=True, null=True)
-    s_gst_total = models.CharField(max_length=255, blank=True, null=True)
-    c_gst_total = models.CharField(max_length=255, blank=True, null=True)
-    other_charge_description = models.CharField(max_length=255, blank=True, null=True)
-    other_charge = models.CharField(max_length=255, blank=True, null=True)
-    bill_total = models.CharField(max_length=255, blank=True, null=True)
-    invoice_id = models.CharField(max_length=255, blank=True, null=True)
+    item_total = models.CharField(max_length=255, blank=True)
+    s_gst_total = models.CharField(max_length=255, blank=True)
+    c_gst_total = models.CharField(max_length=255, blank=True)
+    other_charge_description = models.CharField(max_length=255, blank=True)
+    other_charge = models.CharField(max_length=255, blank=True)
+    bill_total = models.CharField(max_length=255, blank=True)
+    invoice_id = models.CharField(max_length=255)
 
     class Meta:
         ordering = ["-order_date"]
