@@ -78,15 +78,9 @@ class OrderSerializer(serializers.ModelSerializer):
                   'connected_partner')
 
 
-class MinimalProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Product
-        fields = ('id', 'code', 'name', 'packing', 'category')
-
-
 class OrderItemSerializer(serializers.ModelSerializer):
-    product = MinimalProductSerializer()
+    product = ProductSerializer()
 
     class Meta:
         model = models.OrderItem
-        fields = ('id', 'item_quantity', 'product')
+        fields = ('id', 'item_quantity', 'product', 'total', 's_gst', 'c_gst')
