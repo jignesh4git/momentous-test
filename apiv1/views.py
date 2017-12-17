@@ -137,9 +137,14 @@ class ConnectedRetailerView(APIView):
                             data={'error': 'Auth token is missing.'})
 
         # fetch connected retailers for this distributor
-        distributor = models.Distributor.objects.filter(user=user).first()
-        connected_retailers = models.Retailer.objects.filter(distributor=distributor)
-        retailer_data = data_serializers.RetailerMinimalDataSerializer(connected_retailers, many=True).data
+        my_cp = models.ConnectedPartner.objects.filter(partner__user=user)
+        list_my_cp = list(my_cp)
+        retailers = []
+        for retailer in list_my_cp:
+            retailers.append(retailer.connected_partner.user)
+
+        partners = models.Partner.objects.filter(user__in=retailers)
+        retailer_data = data_serializers.RetailerMinimalDataSerializer(partners, many=True).data
 
         return Response({'status': '200', 'data': retailer_data})
 
