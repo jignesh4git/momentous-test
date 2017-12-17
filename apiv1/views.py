@@ -27,9 +27,16 @@ class ManufacturerViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return models.ConnectedPartner.objects.filter(partner__type='manufacturer', connected_partner__user=user)
+        m_cp = models.ConnectedPartner.objects.filter(connected_partner__user=user, partner__type='manufacturer')
+        list_m_cp = list(m_cp)
+        partner_user = []
+        for manufacturer in list_m_cp:
+            partner_user.append(manufacturer.partner.user)
 
-    serializer_class = data_serializers.ManufacturerAccountSerializer
+        partners = models.Partner.objects.filter(user__in=partner_user)
+        return partners
+
+    serializer_class = data_serializers.PartnerAccountSerializer
 
 
 # ViewSets define the view behavior.

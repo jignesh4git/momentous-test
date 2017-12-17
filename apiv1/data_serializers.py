@@ -52,17 +52,6 @@ class PartnerAccountSerializer(serializers.Serializer):
     type = serializers.CharField()
 
 
-class ManufacturerAccountSerializer(serializers.Serializer):
-    company_name = serializers.CharField()
-    company_address = serializers.CharField()
-    mobile_number = serializers.CharField()
-    pin_code = serializers.CharField()
-    GSTIN = serializers.CharField()
-    PAN = serializers.CharField()
-
-    user = UserSerializer()
-
-
 class RetailerAccountSerializer(serializers.Serializer):
     distributor = DistributorSerializer()
     store_number = serializers.CharField()
