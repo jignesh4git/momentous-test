@@ -107,7 +107,10 @@ class PlaceOrder(APIView):
 
             models.OrderItem.objects.create(order=order,
                                             product=product,
-                                            item_quantity=qty)
+                                            item_quantity=qty,
+                                            s_gst=product.base.s_gst,
+                                            c_gst=product.base.c_gst,
+                                            total=product.selling_price * qty)
 
         return Response({'status': '200', 'data': request.data})
 
