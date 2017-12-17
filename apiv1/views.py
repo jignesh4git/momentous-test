@@ -3,6 +3,7 @@
 from partner import models
 from . import data_serializers
 from datetime import datetime
+from django.db.models import Q
 
 from rest_framework import viewsets
 from rest_framework import parsers, renderers
@@ -250,37 +251,23 @@ class MyInvoicesView(APIView):
             return Response(status=400, exception=True,
                             data={'error': 'Auth token is missing.'})
 
-        # fetch retailer or distributor accounts
-        retailer = models.Retailer.objects.filter(user=user).first()
-        distributor = models.Distributor.objects.filter(user=user).first()
+        my_partner_profile = models.Partner.objects.filter(user=user)
 
-        user_type = 'unknown'
+        my_suppliers = models.ConnectedPartner.objects.filter(connected_partner__user=user)
+        my_buyers = models.ConnectedPartner.objects.filter(partner__user=user)
 
-        if retailer is not None and distributor is None:
-            user_type = 'retailer'
-        else:
-            if retailer is None and distributor is not None:
-                user_type = 'distributor'
+        list_my_supply = list(my_suppliers)
+        supplier_user = []
+        for x_user in list_my_supply:
+            supplier_user.append(x_user.partner.user)
 
-        if user_type == 'unknown':
-            return Response(status=400, exception=True,
-                            data={'error': 'This account is not a retailer or distributor.'})
+        supplier_partner = models.Partner.objects.filter(user__in=supplier_user)
 
-        if user_type == 'distributor':
-            connected_retailers = models.Retailer.objects.filter(distributor=distributor)
+        order_data = models.Order.objects.filter(
+            Q(connected_partner__in=supplier_partner) | Q(connected_partner=my_partner_profile))
 
-            response_data = []
-            for retailer in connected_retailers:
-                retailer_orders = models.Order.objects.filter(distributor=distributor, retailer=retailer)
-                orders_data = data_serializers.OrderSerializer(retailer_orders, many=True).data
-                response_data.append({"retailer_id": retailer.id, "orders": orders_data})
-
-            return Response({'status': '200', 'data': response_data})
-
-        if user_type == 'retailer':
-            my_orders = models.Order.objects.filter(retailer=retailer)
-            orders_data = data_serializers.OrderSerializer(my_orders, many=True).data
-            return Response({'status': '200', 'data': orders_data})
+        orders_data = data_serializers.OrderSerializer(order_data, many=True).data
+        return Response({'status': '200', 'data': orders_data})
 
 
 place_order = PlaceOrder.as_view()
