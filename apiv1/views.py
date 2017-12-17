@@ -19,7 +19,17 @@ class UserViewSet(viewsets.ModelViewSet):
 
 # ViewSets define the view behavior.
 class DistributorViewSet(viewsets.ModelViewSet):
-    queryset = models.Distributor.objects.all()
+    def get_queryset(self):
+        user = self.request.user
+        m_cp = models.ConnectedPartner.objects.filter(connected_partner__user=user, partner__type='distributor')
+        list_m_cp = list(m_cp)
+        partner_user = []
+        for distributor in list_m_cp:
+            partner_user.append(distributor.partner.user)
+
+        partners = models.Partner.objects.filter(user__in=partner_user)
+        return partners
+
     serializer_class = data_serializers.PartnerAccountSerializer
 
 
