@@ -57,12 +57,25 @@ class PartnerAccountSerializer(serializers.Serializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    retailer = PartnerAccountSerializer()
-    distributor = PartnerAccountSerializer()
+    partner = PartnerAccountSerializer()
+    connected_partner = PartnerAccountSerializer()
 
     class Meta:
         model = models.Order
-        fields = ('id', 'order_date', 'order_status', 'item_total', 'retailer', 'distributor')
+        fields = ('id',
+                  'order_date',
+                  'order_status',
+                  'item_total',
+                  'delivery_date',
+                  'requested_delivery_time',
+                  's_gst_total',
+                  'c_gst_total',
+                  'other_charge_description',
+                  'other_charge',
+                  'bill_total',
+                  'invoice_id',
+                  'partner',
+                  'connected_partner')
 
 
 class MinimalProductSerializer(serializers.ModelSerializer):
