@@ -97,6 +97,7 @@ class PlaceOrder(APIView):
             order = models.Order.objects.create(partner=placed_by,
                                                 connected_partner=placed_to,
                                                 order_date=datetime.now(),
+                                                delivery_date=datetime.now(),
                                                 order_status='REQUESTED_APP')
 
         # create order items for this order
