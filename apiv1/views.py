@@ -19,6 +19,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 # ViewSets define the view behavior.
 class DistributorViewSet(viewsets.ModelViewSet):
+
     def get_queryset(self):
         user = self.request.user
         m_cp = models.ConnectedPartner.objects.filter(connected_partner__user=user, partner__type='distributor')

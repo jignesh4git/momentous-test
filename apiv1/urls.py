@@ -6,7 +6,7 @@ from .views import DistributorViewSet, ProductViewSet, place_order, get_account,
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
-router.register(r'distributor', DistributorViewSet)
+router.register(r'distributor', DistributorViewSet, base_name='Distributor')
 router.register(r'product', ProductViewSet, base_name='Product')
 router.register(r'manufacturer', ManufacturerViewSet, base_name='Manufacturer')
 
