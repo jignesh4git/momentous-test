@@ -175,31 +175,12 @@ class MyOrdersView(APIView):
             return Response(status=400, exception=True,
                             data={'error': 'Auth token is missing.'})
 
-        # fetch retailer or distributor accounts
-        retailer = models.Retailer.objects.filter(user=user).first()
-        distributor = models.Distributor.objects.filter(user=user).first()
+        my_partner_profile = models.Partner.objects.filter(user=user)
 
-        user_type = 'unknown'
+        order_data = models.Order.objects.filter(partner=my_partner_profile)
 
-        if retailer is not None and distributor is None:
-            user_type = 'retailer'
-        else:
-            if retailer is None and distributor is not None:
-                user_type = 'distributor'
-
-        if user_type == 'unknown':
-            return Response(status=400, exception=True,
-                            data={'error': 'This account is not a retailer or distributor.'})
-
-        if user_type == 'distributor':
-            my_orders = models.Order.objects.filter(distributor=distributor)
-            orders_data = data_serializers.OrderSerializer(my_orders, many=True).data
-            return Response({'status': '200', 'data': orders_data})
-
-        if user_type == 'retailer':
-            my_orders = models.Order.objects.filter(retailer=retailer)
-            orders_data = data_serializers.OrderSerializer(my_orders, many=True).data
-            return Response({'status': '200', 'data': orders_data})
+        orders_data = data_serializers.OrderSerializer(order_data, many=True).data
+        return Response({'status': '200', 'data': orders_data})
 
 
 class MyOrderDetailView(APIView):
@@ -254,7 +235,6 @@ class MyInvoicesView(APIView):
         my_partner_profile = models.Partner.objects.filter(user=user)
 
         my_suppliers = models.ConnectedPartner.objects.filter(connected_partner__user=user)
-        my_buyers = models.ConnectedPartner.objects.filter(partner__user=user)
 
         list_my_supply = list(my_suppliers)
         supplier_user = []
