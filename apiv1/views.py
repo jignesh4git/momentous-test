@@ -46,8 +46,27 @@ class ProductViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         seller_id = self.request.query_params['id']
-        products = models.Product.objects.filter(connected_partner__user=user, partner__user__id=seller_id, is_active=True)
+        products = models.Product.objects.filter(connected_partner__user=user, partner__user__id=seller_id,
+                                                 is_active=True)
         return products
+
+
+class MyProductsView(APIView):
+    throttle_classes = ()
+    permission_classes = ()
+    parser_classes = (parsers.JSONParser,)
+    renderer_classes = (renderers.JSONRenderer,)
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        if type(user).__name__ == 'AnonymousUser':
+            return Response(status=400, exception=True,
+                            data={'error': 'Auth token is missing.'})
+        
+        products = models.Product.objects.filter(connected_partner__user=user)
+        products_data = data_serializers.ProductSerializer(products, many=True).data
+        return Response({'status': '200', 'data': products_data})
 
 
 class PlaceOrder(APIView):
@@ -275,6 +294,7 @@ class MyInvoicesView(APIView):
 place_order = PlaceOrder.as_view()
 get_account = AccountView.as_view()
 get_connected_retailers = ConnectedRetailerView.as_view()
+get_my_products = MyProductsView.as_view()
 get_orders = MyOrdersView.as_view()
 get_order_detail = MyOrderDetailView.as_view()
 get_invoices = MyInvoicesView.as_view()

@@ -2,7 +2,7 @@ from django.conf.urls import url, include
 from rest_framework import routers
 from rest_framework.authtoken import views
 from .views import DistributorViewSet, ProductViewSet, place_order, get_account, get_connected_retailers, \
-    get_orders, get_order_detail, get_invoices, ManufacturerViewSet
+    get_orders, get_order_detail, get_invoices, ManufacturerViewSet, get_my_products
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'place_order/', place_order),
     url(r'account/', get_account),
     url(r'my_retailers', get_connected_retailers),
+    url(r'my_products', get_my_products),
     url(r'orders', get_orders),
     url(r'order_detail', get_order_detail),
     url(r'invoices', get_invoices),
