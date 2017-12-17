@@ -22,10 +22,24 @@ class RetailerSerializer(serializers.ModelSerializer):
         fields = ('user', 'store_name', 'mobile_number', 'store_address')
 
 
+class PartnerMinimalDataSerializer(serializers.Serializer):
+    mobile_number = serializers.CharField()
+    company_name = serializers.CharField()
+    pin_code = serializers.CharField()
+
+
+class BaseProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.BaseProduct
+        manufacturer = PartnerMinimalDataSerializer()
+        fields = ('manufacturer', 'code', 'name', 'packing', 's_gst', 'c_gst', 'category')
+
+
 class ProductSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Product
-        fields = ('id', 'code', 'name', 'packing', 'category')
+        base = BaseProductSerializer()
+        fields = ('selling_price', 'is_active', 'base')
 
 
 class RetailerMinimalDataSerializer(serializers.Serializer):
