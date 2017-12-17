@@ -34,7 +34,8 @@ ALLOWED_HOSTS = [
     'momentous-dr-app.herokuapp.com',
     'saleseasy.herokuapp.com',
     '127.0.0.1',
-   'sales-easy-test.herokuapp.com', 
+    'sales-easy-test.herokuapp.com',
+    'localhost',
 ]
 
 # Application definition
@@ -100,7 +101,7 @@ DATABASES = {
     }
 }
 
-#Postgres database link
+# Postgres database link
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
