@@ -207,22 +207,6 @@ class MyOrderDetailView(APIView):
             return Response(status=400, exception=True,
                             data={'error': 'Auth token is missing.'})
 
-        # fetch retailer or distributor accounts
-        retailer = models.Retailer.objects.filter(user=user).first()
-        distributor = models.Distributor.objects.filter(user=user).first()
-
-        user_type = 'unknown'
-
-        if retailer is not None and distributor is None:
-            user_type = 'retailer'
-        else:
-            if retailer is None and distributor is not None:
-                user_type = 'distributor'
-
-        if user_type == 'unknown':
-            return Response(status=400, exception=True,
-                            data={'error': 'This account is not a retailer or distributor.'})
-
         req_order_id = request.query_params['id']
 
         order_items = models.OrderItem.objects.filter(order_id=req_order_id)
