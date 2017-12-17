@@ -24,7 +24,11 @@ class DistributorViewSet(viewsets.ModelViewSet):
 
 # ViewSets define the view behavior.
 class ManufacturerViewSet(viewsets.ModelViewSet):
-    queryset = models.Manufacturer.objects.all()
+
+    def get_queryset(self):
+        user = self.request.user
+        return models.ConnectedPartner.objects.filter(connected_partner=user, type='manufacturer')
+
     serializer_class = data_serializers.ManufacturerAccountSerializer
 
 
