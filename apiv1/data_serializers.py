@@ -78,7 +78,7 @@ class RetailerAccountSerializer(serializers.Serializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     retailer = RetailerMinimalDataSerializer()
-    distributor = DistributorAccountSerializer()
+    distributor = PartnerAccountSerializer()
 
     class Meta:
         model = models.Order
