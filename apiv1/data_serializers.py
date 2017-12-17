@@ -40,15 +40,17 @@ class RetailerMinimalDataSerializer(serializers.Serializer):
     user = UserSerializer()
 
 
-class DistributorAccountSerializer(serializers.Serializer):
-    company_name = serializers.CharField()
-    company_address = serializers.CharField()
+class PartnerAccountSerializer(serializers.Serializer):
+    user = UserSerializer()
     mobile_number = serializers.CharField()
+    alternate_number = serializers.CharField()
+    company_name = serializers.CharField()
+    address = serializers.CharField()
     pin_code = serializers.CharField()
     GSTIN = serializers.CharField()
     PAN = serializers.CharField()
+    type = serializers.CharField()
 
-    user = UserSerializer()
 
 class ManufacturerAccountSerializer(serializers.Serializer):
     company_name = serializers.CharField()

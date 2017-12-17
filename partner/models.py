@@ -18,7 +18,7 @@ class Partner(models.Model):
         ('add_partner', 'Add Partner'),
     )
 
-    user = models.OneToOneField(User,on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     mobile_number = PhoneNumberField()
     alternate_number = PhoneNumberField()
     company_name = models.CharField(max_length=255, blank=False)
@@ -39,14 +39,16 @@ class Partner(models.Model):
     def __str__(self):
         return "{}".format(self.company_name)
 
+
 class ConnectedPartner(models.Model):
-    partner = models.ForeignKey(Partner,related_name='partner')
+    partner = models.ForeignKey(Partner, related_name='partner')
     connected_partner = models.ForeignKey(Partner, related_name='connected_partner')
     credit_limit = models.IntegerField()
     remaining = models.IntegerField()
 
     def __str__(self):
-        return "{}".format(self.connected_partner,self.partner)
+        return "{}".format(self.connected_partner, self.partner)
+
 
 class Manufacturer(models.Model):
     user = models.OneToOneField(User)
@@ -89,8 +91,9 @@ class Retailer(models.Model):
     def __str__(self):
         return "{}".format(self.store_name, self.store_number)
 
+
 class BaseProduct(models.Model):
-    manufacturer = models.ForeignKey(Partner,on_delete=models.CASCADE)
+    manufacturer = models.ForeignKey(Partner, on_delete=models.CASCADE)
     code = models.CharField(max_length=255, blank=True)
     name = models.CharField(max_length=255, blank=False)
     packing = models.CharField(max_length=255, blank=False)
@@ -104,28 +107,31 @@ class BaseProduct(models.Model):
     s_gst = models.IntegerField(choices=GST_CHOICES, default=0)
     c_gst = models.IntegerField(choices=GST_CHOICES, default=0)
     category = models.CharField(max_length=255, blank=True)
+
     class Meta:
         verbose_name_plural = "Product Master"
+
     def __str__(self):
-        return '%s %s (%s)' % (self.code,self.name,self.manufacturer)
+        return '%s %s (%s)' % (self.code, self.name, self.manufacturer)
 
 
 class Product(models.Model):
-    partner = models.ForeignKey(Partner,on_delete=models.CASCADE)
-    connected_partner=models.ForeignKey(Partner,related_name='product_partner')
-    base = models.ForeignKey(BaseProduct,on_delete=models.CASCADE)
+    partner = models.ForeignKey(Partner, on_delete=models.CASCADE)
+    connected_partner = models.ForeignKey(Partner, related_name='product_partner')
+    base = models.ForeignKey(BaseProduct, on_delete=models.CASCADE)
     selling_price = models.FloatField()
     is_active = models.BooleanField()
 
     def __unicode__(self):
         return "{}".format(self.base, self.partner, self.connected_partner)
+
     def __str__(self):
-        return '%s (%s)(%s)' % (self.base,self.connected_partner,self.selling_price)
+        return '%s (%s)(%s)' % (self.base, self.connected_partner, self.selling_price)
 
 
 class Order(models.Model):
-    partner = models.ForeignKey(Partner,on_delete=models.CASCADE)
-    connected_partner=models.ForeignKey(Partner,related_name='order_partner')
+    partner = models.ForeignKey(Partner, on_delete=models.CASCADE)
+    connected_partner = models.ForeignKey(Partner, related_name='order_partner')
     order_status = models.CharField(max_length=255, blank=False)
     order_date = models.DateField(auto_created=True)
     delivery_date = models.DateField(blank=True)
@@ -150,7 +156,7 @@ class Order(models.Model):
         return "SEFRM" + str(self.partner.id) + "TO" + str(self.connected_partner.id) + "-" + str(self.number)
 
     def __str__(self):
-        return "{}".format(self.id,self.partner,self.connected_partner)
+        return "{}".format(self.id, self.partner, self.connected_partner)
 
     def save(self, *args, **kwargs):
         if not self.invoice_id:
@@ -193,7 +199,8 @@ class ConnectedDistributor(models.Model):
     remaining = models.IntegerField()
 
     def __str__(self):
-        return "{}".format(self.distributor,self.manufacturer)
+        return "{}".format(self.distributor, self.manufacturer)
+
 
 class Employee(models.Model):
     PERMISSIONS = (
@@ -209,7 +216,7 @@ class Employee(models.Model):
     permissions = models.CharField(max_length=255, choices=PERMISSIONS, blank=True)
 
     def __str__(self):
-        return "%s %s" % (self.first_name,self.last_name)
+        return "%s %s" % (self.first_name, self.last_name)
 
     def save(self, *args, **kwargs):
         u = User.objects.get(username=self.user)
@@ -227,6 +234,7 @@ class Employee(models.Model):
             group = Group.objects.get(name='order')
             group.user_set.add(u)
         super(Employee, self).save(*args, **kwargs)
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
