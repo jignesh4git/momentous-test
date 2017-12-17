@@ -46,7 +46,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         seller_id = self.request.query_params['id']
-        return models.Product.objects.filter(connected_partner__user=user, partner__user_id=seller_id, is_active=True)
+        products = models.Product.objects.filter(connected_partner__user=user, partner__id=seller_id, is_active=True)
+        return products
 
 class PlaceOrder(APIView):
     throttle_classes = ()

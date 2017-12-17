@@ -29,16 +29,18 @@ class PartnerMinimalDataSerializer(serializers.Serializer):
 
 
 class BaseProductSerializer(serializers.ModelSerializer):
+    manufacturer = PartnerMinimalDataSerializer()
+
     class Meta:
         model = models.BaseProduct
-        manufacturer = PartnerMinimalDataSerializer()
         fields = ('manufacturer', 'code', 'name', 'packing', 's_gst', 'c_gst', 'category')
 
 
-class ProductSerializer(serializers.HyperlinkedModelSerializer):
+class ProductSerializer(serializers.ModelSerializer):
+    base = BaseProductSerializer()
+
     class Meta:
         model = models.Product
-        base = BaseProductSerializer()
         fields = ('selling_price', 'is_active', 'base')
 
 
