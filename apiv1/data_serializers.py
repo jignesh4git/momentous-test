@@ -44,18 +44,6 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = ('selling_price', 'is_active', 'base')
 
 
-class RetailerMinimalDataSerializer(serializers.Serializer):
-    store_number = serializers.CharField()
-    store_name = serializers.CharField()
-    mobile_number = serializers.CharField()
-    store_address = serializers.CharField()
-    pin_code = serializers.CharField()
-    GSTIN = serializers.CharField()
-    PAN = serializers.CharField()
-
-    user = UserSerializer()
-
-
 class PartnerAccountSerializer(serializers.Serializer):
     user = UserSerializer()
     mobile_number = serializers.CharField()
@@ -68,21 +56,8 @@ class PartnerAccountSerializer(serializers.Serializer):
     type = serializers.CharField()
 
 
-class RetailerAccountSerializer(serializers.Serializer):
-    distributor = DistributorSerializer()
-    store_number = serializers.CharField()
-    store_name = serializers.CharField()
-    mobile_number = serializers.CharField()
-    store_address = serializers.CharField()
-    pin_code = serializers.CharField()
-    GSTIN = serializers.CharField()
-    PAN = serializers.CharField()
-
-    user = UserSerializer()
-
-
 class OrderSerializer(serializers.ModelSerializer):
-    retailer = RetailerMinimalDataSerializer()
+    retailer = PartnerAccountSerializer()
     distributor = PartnerAccountSerializer()
 
     class Meta:

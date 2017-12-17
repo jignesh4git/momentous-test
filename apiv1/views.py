@@ -49,6 +49,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         products = models.Product.objects.filter(connected_partner__user=user, partner__id=seller_id, is_active=True)
         return products
 
+
 class PlaceOrder(APIView):
     throttle_classes = ()
     permission_classes = ()
@@ -144,7 +145,7 @@ class ConnectedRetailerView(APIView):
             retailers.append(retailer.connected_partner.user)
 
         partners = models.Partner.objects.filter(user__in=retailers)
-        retailer_data = data_serializers.RetailerMinimalDataSerializer(partners, many=True).data
+        retailer_data = data_serializers.PartnerAccountSerializer(partners, many=True).data
 
         return Response({'status': '200', 'data': retailer_data})
 
