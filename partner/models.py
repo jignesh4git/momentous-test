@@ -174,8 +174,8 @@ class OrderItem(models.Model):
     s_gst = models.CharField(max_length=255, blank=True)
     c_gst = models.CharField(max_length=255, blank=True)
 
-    # class Meta:
-    #     verbose_name_plural = "Invoices"
+    class Meta:
+        verbose_name_plural = "Invoices"
 
     def __str__(self):
         return "{}".format(self.order_id, self.id, self.product_id)
