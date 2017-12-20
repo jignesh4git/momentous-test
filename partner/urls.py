@@ -12,6 +12,7 @@ urlpatterns = [
     url('^invoices/', views.OrderInvoiceView.as_view(), name="orderinvoice_list"),
     url('^invoice/(?P<pk>[0-9]+)/detail/', views.InvoiceDetailView.as_view(),name="invoicedetail"),
     url('^order/', include(views.OrderViewSet().urls), name="order_list"),
+    url('^partnerproduct/', views.ProductListView.as_view(), name="product-list"),
     url('^product/', include(views.ProductViewSet().urls), name="product_list"),
     url('^orderitem/', include(views.OrderItemViewSet().urls), name="orderitem_list"),
     url('^connectedpartner/', include(views.ConnectedPartnerViewSet().urls), name="connectedpartner_list")

@@ -22,8 +22,8 @@ class ConnectedPartnerViewSet(ModelViewSet):
         if emp:
             partner = emp
         if not request.user.is_superuser:
-            # partner = models.Partner.objects.filter(user=request.user)
-            return models.ConnectedPartner.objects.filter(Q(partner=partner) | Q(connected_partner__in=partner))
+           # partner = models.Partner.objects.filter(user=request.user)
+             return models.ConnectedPartner.objects.filter(partner=partner) | models.ConnectedPartner.objects.filter(connected_partner__in=partner)
         return models.ConnectedPartner.objects.all()
 
 
@@ -32,9 +32,16 @@ class ProductViewSet(ModelViewSet):
     list_display = ('partner', 'connected_partner', 'base', 'selling_price', 'is_active')
 
     def get_queryset(self, request):
-        partner = models.Partner.objects.filter(user=request.user)
-        return models.Product.objects.filter(partner=partner) | models.Product.objects.filter(connected_partner=partner)
+        emp = models.Employee.objects.filter(user=request.user).values('partner')
+        if not request.user.is_superuser:
+            partner = models.Partner.objects.filter(user=request.user)
+            if emp:
+                partner = emp
+            return models.Product.objects.filter(partner=partner) | models.Product.objects.filter(connected_partner=partner)
+        return models.Product.objects.all()
 
+class ProductListView(ListView):
+    model = models.Product
 
 class OrderViewSet(ModelViewSet):
     model = models.Order
@@ -43,9 +50,12 @@ class OrderViewSet(ModelViewSet):
         'bill_total')
 
     def get_queryset(self, request):
+        emp = models.Employee.objects.filter(user=request.user).values('partner')
         if not request.user.is_superuser:
             partner = models.Partner.objects.filter(user=request.user)
-            return models.Order.objects.filter(partner=partner) | models.Order.objects.filter(connected_partner=partner)
+            if emp:
+                partner = emp
+            return models.Order.objects.filter(partner=partner)  | models.Order.objects.filter(connected_partner=partner)
         return models.Order.objects.all()
 
     def get_detail_view(request):
@@ -58,7 +68,11 @@ class OrderInvoiceView(TemplateView, ListModelView):
 
     def get(self, request, **kwargs):
         context = super(OrderInvoiceView, self).get_context_data(**kwargs)
-        partner = models.Partner.objects.filter(user=request.user)
+        emp = models.Employee.objects.filter(user=request.user).values('partner')
+        if not request.user.is_superuser:
+            partner = models.Partner.objects.filter(user=request.user)
+            if emp:
+                partner = emp
         order = models.Order.objects.filter(partner=partner) | models.Order.objects.filter(connected_partner=partner)
         context['orders'] = order
         return render(
@@ -81,6 +95,8 @@ class InvoiceDetailView(TemplateView, ListModelView):
         context['order'] = models.Order.objects.filter(id=order_id)
         context['manufacturer'] = models.Partner.objects.filter(Q(id=partner_id) & Q(type='manufacturer'))
         context['distributor'] = models.Partner.objects.filter(Q(id=partner_id) & Q(type='distributor'))
+        if not context['distributor']:
+            context['distributor'] = context['manufacturer']
         context['retailer'] = models.Partner.objects.filter(Q(id=partner_id) & Q(type='retailer'))
         context['orderitems'] = models.OrderItem.objects.filter(order_id=order_id)
         orderproducts = models.Product.objects.in_bulk(context['orderitems'])
@@ -97,8 +113,11 @@ class OrderItemViewSet(ModelViewSet):
     list_display = ('order_id', 'product', 'item_quantity')
 
     def get_queryset(self, request):
+        emp = models.Employee.objects.filter(user=request.user).values('partner')
         if not request.user.is_superuser:
             partner = models.Partner.objects.filter(user=request.user)
+            if emp:
+                partner = emp
             order = models.Order.objects.filter(partner=partner)
             return models.OrderItem.objects.filter(order__in=order)
         return models.OrderItem.objects.all()
