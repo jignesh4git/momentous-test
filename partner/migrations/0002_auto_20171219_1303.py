@@ -10,4 +10,10 @@ class Migration(migrations.Migration):
     dependencies = [
         ('partner', '0001_initial'),
     ]
-
+    operations = [
+        migrations.AlterField(
+            model_name='product',
+            name='selling_price',
+            field=models.FloatField(null=True),
+        ),
+    ]
