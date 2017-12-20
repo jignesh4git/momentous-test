@@ -118,7 +118,7 @@ class Product(models.Model):
     partner = models.ForeignKey(Partner, on_delete=models.CASCADE)
     connected_partner = models.ForeignKey(Partner, related_name='product_partner')
     base = models.ForeignKey(BaseProduct, on_delete=models.CASCADE)
-    selling_price = models.FloatField()
+    selling_price = models.FloatField(null=True)
     is_active = models.BooleanField()
 
     def __unicode__(self):
