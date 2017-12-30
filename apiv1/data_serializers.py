@@ -56,6 +56,15 @@ class PartnerAccountSerializer(serializers.Serializer):
     type = serializers.CharField()
 
 
+class EmployeeSerializer(serializers.ModelSerializer):
+    partner = PartnerAccountSerializer()
+    user = UserSerializer()
+
+    class Meta:
+        model = models.Product
+        fields = ('id', 'user', 'first_name', 'last_name', 'mobile_no', 'partner')
+
+
 class OrderSerializer(serializers.ModelSerializer):
     partner = PartnerAccountSerializer()
     connected_partner = PartnerAccountSerializer()

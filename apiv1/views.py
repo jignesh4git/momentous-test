@@ -143,8 +143,13 @@ class AccountView(APIView):
         # fetch partner accounts
         partner = models.Partner.objects.filter(user=user).first()
 
-        partner_data = data_serializers.PartnerAccountSerializer(partner).data
-        return Response({'status': '200', 'data': partner_data, 'type': partner.type})
+        if partner is None:
+            employee = models.Employee.objects.filter(user=user).first()
+            employee_data = data_serializers.EmployeeSerializer(employee).data
+            return Response({'status': '200', 'data': employee_data, 'type': 'employee'})
+        else:
+            partner_data = data_serializers.PartnerAccountSerializer(partner).data
+            return Response({'status': '200', 'data': partner_data, 'type': partner.type})
 
 
 class ConnectedRetailerView(APIView):
@@ -245,6 +250,46 @@ class MyInvoicesView(APIView):
         return Response({'status': '200', 'data': orders_data})
 
 
+class CreateAccountView(APIView):
+    throttle_classes = ()
+    permission_classes = ()
+    parser_classes = (parsers.JSONParser,)
+    renderer_classes = (renderers.JSONRenderer,)
+
+    def post(self, request, *args, **kwargs):
+        employee_id = request.user.id
+
+        employee = models.Employee.objects.filter(user_id=employee_id)
+
+        employer = employee.partner
+
+        distributor_data = request.data['distributor']
+
+        fn = distributor_data['fn']
+        ln = distributor_data['ln']
+        un = distributor_data['un']
+        mn = distributor_data['mn']
+        cn = distributor_data['cn']
+        pc = distributor_data['pc']
+        cl = distributor_data['cl']
+
+        user = models.User.objects.create(first_name=fn,
+                                          last_name=ln,
+                                          username=un)
+        partner = models.Partner.objects.create(user=user,
+                                                mobile_number=mn,
+                                                company_name=cn,
+                                                pin_code=pc)
+
+        connected_partner = models.ConnectedPartner.objects.create(partner=partner,
+                                                                   connected_partner=employer,
+                                                                   credit_limit=cl)
+
+        return Response({'status': '200', 'data': {'partner': partner,
+                                                   'connected_partner': connected_partner}
+                         })
+
+
 place_order = PlaceOrder.as_view()
 get_account = AccountView.as_view()
 get_connected_retailers = ConnectedRetailerView.as_view()
@@ -252,3 +297,4 @@ get_my_products = MyProductsView.as_view()
 get_orders = MyOrdersView.as_view()
 get_order_detail = MyOrderDetailView.as_view()
 get_invoices = MyInvoicesView.as_view()
+create_account = CreateAccountView.as_view()
