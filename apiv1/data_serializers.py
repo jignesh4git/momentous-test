@@ -61,7 +61,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
     user = UserSerializer()
 
     class Meta:
-        model = models.Product
+        model = models.Employee
         fields = ('id', 'user', 'first_name', 'last_name', 'mobile_no', 'partner')
 
 
