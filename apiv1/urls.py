@@ -21,6 +21,6 @@ urlpatterns = [
     url(r'orders', get_orders),
     url(r'order_detail', get_order_detail),
     url(r'invoices', get_invoices),
-    url(r'create_account', create_account),
+    url(r'create_account/', create_account),
 
 ]
