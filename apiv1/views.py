@@ -270,7 +270,6 @@ class CreateAccountView(APIView):
         un = distributor_data['un']
         mn = distributor_data['mn']
         cn = distributor_data['cn']
-        pc = distributor_data['pc']
         cl = distributor_data['cl']
 
         user = models.User.objects.create(first_name=fn,
@@ -278,8 +277,7 @@ class CreateAccountView(APIView):
                                           username=un)
         partner = models.Partner.objects.create(user=user,
                                                 mobile_number=mn,
-                                                company_name=cn,
-                                                pin_code=pc)
+                                                company_name=cn)
 
         connected_partner = models.ConnectedPartner.objects.create(partner=partner,
                                                                    connected_partner=employer,
