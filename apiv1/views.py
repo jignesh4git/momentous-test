@@ -60,6 +60,12 @@ class ProductViewSet(viewsets.ModelViewSet):
         seller_id = self.request.query_params['id']
         products = models.Product.objects.filter(connected_partner__user=user, partner__user__id=seller_id,
                                                  is_active=True)
+        if len(list(products)) == 0:
+            employee = models.Employee.objects.filter(user=user).first()
+            if employee is not None:
+                products = models.Product.objects.filter(connected_partner__user__id=seller_id,
+                                                         partner=employee.partner,
+                                                         is_active=True)
         return products
 
 
