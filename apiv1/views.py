@@ -256,6 +256,11 @@ class CreateAccountView(APIView):
     parser_classes = (parsers.JSONParser,)
     renderer_classes = (renderers.JSONRenderer,)
 
+    def allowed_methods(self):
+        self.http_method_names.append("post")
+        return [method.upper() for method in self.http_method_names
+                if hasattr(self, method)]
+
     def post(self, request, *args, **kwargs):
         employee_id = request.user.id
 
@@ -288,6 +293,35 @@ class CreateAccountView(APIView):
                          })
 
 
+class EmployeeConnectedDistributorsView(APIView):
+    throttle_classes = ()
+    permission_classes = ()
+    parser_classes = (parsers.JSONParser,)
+    renderer_classes = (renderers.JSONRenderer,)
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        if type(user).__name__ == 'AnonymousUser':
+            return Response(status=400, exception=True,
+                            data={'error': 'Auth token is missing.'})
+
+        # fetch connected retailers for this distributor
+        employee = models.Employee.objects.filter(user=user).first()
+
+        manufacturer = employee.partner.user
+        my_cp = models.ConnectedPartner.objects.filter(partner__user=manufacturer)
+        list_my_cp = list(my_cp)
+        distributors = []
+        for retailer in list_my_cp:
+            distributors.append(retailer.connected_partner.user)
+
+        partners = models.Partner.objects.filter(user__in=distributors)
+        retailer_data = data_serializers.PartnerAccountSerializer(partners, many=True).data
+
+        return Response({'status': '200', 'data': retailer_data})
+
+
 place_order = PlaceOrder.as_view()
 get_account = AccountView.as_view()
 get_connected_retailers = ConnectedRetailerView.as_view()
@@ -296,3 +330,4 @@ get_orders = MyOrdersView.as_view()
 get_order_detail = MyOrderDetailView.as_view()
 get_invoices = MyInvoicesView.as_view()
 create_account = CreateAccountView.as_view()
+connected_distributors = EmployeeConnectedDistributorsView.as_view()
