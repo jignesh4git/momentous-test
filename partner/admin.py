@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group
 # Register your models here.
 class PartnerAdmin(admin.ModelAdmin):
     icon = '<i class="material-icons">accessibility</i>'
-    list_display=('company_name','type','mobile_number','address','GSTIN','PAN','ADHAAR')
+    list_display=('company_name','type','mobile_number','address','GSTIN')
 
     def get_queryset(self, request):
          partner = models.Partner.objects.filter(user=request.user)
@@ -69,18 +69,38 @@ class ConnectedPartnerAdmin(admin.ModelAdmin):
 class BaseProductAdmin(admin.ModelAdmin):
     icon = '<i class="material-icons">add_circle</i>'
     list_display=('manufacturer','code','name','packing','category')
-
-class ProductAdmin(admin.ModelAdmin):
-    icon = '<i class="material-icons">add</i>'
-    list_display = ('partner','connected_partner','base','selling_price','is_active')
-
     def get_queryset(self, request):
         emp = models.Employee.objects.filter(user=request.user).values('partner')
         if not request.user.is_superuser:
             partner = models.Partner.objects.filter(user=request.user)
+            connected_partner = models.ConnectedPartner.objects.filter(partner=partner).values('connected_partner')
             if emp:
                 partner = emp
-            return models.Product.objects.filter(partner=partner) | models.Product.objects.filter(connected_partner=partner)
+            return models.BaseProduct.objects.filter(manufacturer=partner) | models.BaseProduct.objects.filter(manufacturer__in=connected_partner)
+        return models.Product.objects.all()
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        partner = models.Partner.objects.filter(user=request.user)
+        emp = models.Employee.objects.filter(user=request.user).values('partner')
+        if emp:
+            partner = emp
+        if not request.user.is_superuser:
+            if db_field.name == 'manufacturer':
+                kwargs['queryset'] = models.Partner.objects.filter(id__in=partner)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+class ProductAdmin(admin.ModelAdmin):
+    icon = '<i class="material-icons">add</i>'
+    list_display = ('partner','connected_partner','base','selling_price','is_active')
+    list_filter = ('connected_partner',)
+    def get_queryset(self, request):
+        emp = models.Employee.objects.filter(user=request.user).values('partner')
+        if not request.user.is_superuser:
+            partner = models.Partner.objects.filter(user=request.user)
+            connected_partner = models.ConnectedPartner.objects.filter(partner=partner).values('connected_partner')
+            if emp:
+                partner = emp
+            return models.Product.objects.filter(partner=partner) | models.Product.objects.filter(connected_partner__in=connected_partner)
         return models.Product.objects.all()
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         partner = models.Partner.objects.filter(user=request.user)
@@ -94,6 +114,12 @@ class ProductAdmin(admin.ModelAdmin):
                 partner_id = models.ConnectedPartner.objects.filter(connected_partner=partner).values('partner')
                 connected_partner_id = models.ConnectedPartner.objects.filter(partner=partner).values('connected_partner')
                 kwargs['queryset'] = models.Partner.objects.filter(id__in=partner_id) | models.Partner.objects.filter(id__in=connected_partner_id) & models.Partner.objects.exclude(id=partner)
+            # if db_field.name == 'base':
+            #     partner = models.Partner.objects.filter(user=request.user)
+            #     connected_partner = models.ConnectedPartner.objects.filter(partner=partner).values('connected_partner')
+            #     if emp:
+            #         partner = emp
+            #     kwargs['queryset'] = models.BaseProduct.objects.filter(manufacturer__in=partner) | models.BaseProduct.objects.filter(manufacturer__in=connected_partner)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class OrderAdmin(admin.ModelAdmin):

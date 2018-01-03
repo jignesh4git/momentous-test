@@ -2,15 +2,17 @@
 from __future__ import unicode_literals
 
 from material.frontend.views import ModelViewSet, ListModelView
+from material import *
 from django.views.generic.detail import SingleObjectMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from . import models
+from . import forms
 from django.db.models import When, Q, F
 from django.views import generic
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-
+from django.http import JsonResponse, QueryDict
 
 class ConnectedPartnerViewSet(ModelViewSet):
     model = models.ConnectedPartner
@@ -73,8 +75,8 @@ class OrderInvoiceView(TemplateView, ListModelView):
             partner = models.Partner.objects.filter(user=request.user)
             if emp:
                 partner = emp
-        order = models.Order.objects.filter(partner=partner) | models.Order.objects.filter(connected_partner=partner)
-        context['orders'] = order
+            order = models.Order.objects.filter(partner=partner) | models.Order.objects.filter(connected_partner=partner)
+            context['orders'] = order
         return render(
             request,
             'partner/invoices.html',
