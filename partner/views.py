@@ -7,7 +7,6 @@ from django.views.generic.detail import SingleObjectMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from . import models
-from . import forms
 from django.db.models import When, Q, F
 from django.views import generic
 from django.views.generic import TemplateView, ListView
