@@ -77,7 +77,7 @@ class BaseProductAdmin(admin.ModelAdmin):
             if emp:
                 partner = emp
             return models.BaseProduct.objects.filter(manufacturer=partner) | models.BaseProduct.objects.filter(manufacturer__in=connected_partner)
-        return models.Product.objects.all()
+        return models.BaseProduct.objects.all()
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         partner = models.Partner.objects.filter(user=request.user)
@@ -114,12 +114,10 @@ class ProductAdmin(admin.ModelAdmin):
                 partner_id = models.ConnectedPartner.objects.filter(connected_partner=partner).values('partner')
                 connected_partner_id = models.ConnectedPartner.objects.filter(partner=partner).values('connected_partner')
                 kwargs['queryset'] = models.Partner.objects.filter(id__in=partner_id) | models.Partner.objects.filter(id__in=connected_partner_id) & models.Partner.objects.exclude(id=partner)
-            # if db_field.name == 'base':
-            #     partner = models.Partner.objects.filter(user=request.user)
-            #     connected_partner = models.ConnectedPartner.objects.filter(partner=partner).values('connected_partner')
-            #     if emp:
-            #         partner = emp
-            #     kwargs['queryset'] = models.BaseProduct.objects.filter(manufacturer__in=partner) | models.BaseProduct.objects.filter(manufacturer__in=connected_partner)
+            if db_field.name == 'base':
+                partner_id = models.ConnectedPartner.objects.filter(connected_partner=partner).values('partner')
+                connected_partner_id = models.ConnectedPartner.objects.filter(partner=partner).values('connected_partner')
+                kwargs['queryset'] = models.BaseProduct.objects.filter(manufacturer__in=partner_id) | models.BaseProduct.objects.filter(manufacturer__in=connected_partner_id)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class OrderAdmin(admin.ModelAdmin):
