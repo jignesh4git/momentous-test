@@ -112,6 +112,10 @@ class PlaceOrder(APIView):
             placed_to = models.Partner.objects.filter(user_id=placed_to_user_id).first()
             placed_by = models.Partner.objects.filter(user_id=requester_id).first()
 
+            if placed_by is None:
+                placed_for = request.data['placed_for']
+                placed_by = models.Partner.objects.filter(user_id=placed_for).first()
+
             order = models.Order.objects.create(partner=placed_by,
                                                 connected_partner=placed_to,
                                                 order_date=datetime.now(),
