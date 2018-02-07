@@ -104,9 +104,11 @@ class ProductAdmin(admin.ModelAdmin):
         return models.Product.objects.all()
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         partner = models.Partner.objects.filter(user=request.user)
+        manufacturer = models.Partner.objects.filter(user=request.user,type="manufacturer")
         emp = models.Employee.objects.filter(user=request.user).values('partner')
         if emp:
             partner = emp
+            manufacturer = models.Partner.objects.filter(id__in=partner,type="manufacturer")
         if not request.user.is_superuser:
             if db_field.name == 'partner':
                     kwargs['queryset'] = models.Partner.objects.filter(id__in=partner)
@@ -115,9 +117,12 @@ class ProductAdmin(admin.ModelAdmin):
                 connected_partner_id = models.ConnectedPartner.objects.filter(partner=partner).values('connected_partner')
                 kwargs['queryset'] = models.Partner.objects.filter(id__in=partner_id) | models.Partner.objects.filter(id__in=connected_partner_id) & models.Partner.objects.exclude(id=partner)
             if db_field.name == 'base':
-                partner_id = models.ConnectedPartner.objects.filter(connected_partner=partner).values('partner')
-                connected_partner_id = models.ConnectedPartner.objects.filter(partner=partner).values('connected_partner')
-                kwargs['queryset'] = models.BaseProduct.objects.filter(manufacturer__in=partner_id) | models.BaseProduct.objects.filter(manufacturer__in=connected_partner_id)
+
+                baseproduct_id = models.Product.objects.filter(partner__in=partner).values('base') | models.Product.objects.filter(connected_partner__in=partner).values('base')
+                if manufacturer:
+                    kwargs['queryset'] = models.BaseProduct.objects.filter(manufacturer=partner)
+                else :
+                    kwargs['queryset'] = models.BaseProduct.objects.filter(id__in=baseproduct_id)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class OrderAdmin(admin.ModelAdmin):
